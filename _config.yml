@@ -8,10 +8,10 @@
 
 # Basic Site Settings
 locale                   : "en-US"
-title                    : "Your Name / Site Title"
+title                    : "Neil De La Fuente "
 title_separator          : "-"
 name                     : &name "Neil De La Fuente"
-description              : &description "personal description"
+description              : &description "ML Researcher"
 url                      : https://neilus03.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
 repository               : "academicpages/academicpages.github.io"
