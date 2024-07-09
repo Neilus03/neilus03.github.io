@@ -8,7 +8,6 @@ redirect_from:
 ---
 
 {% include base_path %}
-# Neil De La Fuente
 
 **Location:** Barcelona, Spain  
 **GitHub:** [https://github.com/Neilus03](https://github.com/Neilus03)  
