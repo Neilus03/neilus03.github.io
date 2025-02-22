@@ -1,51 +1,28 @@
 /*
-  Smoother Tetris animation approach:
-  - Blocks fall continuously at a certain speed (pixels per second).
-  - Each block is placed once it hits bottom or a stacked block.
-  - A new shape spawns afterward.
+  Smooth Tetris blocks:
+  - Blocks fall at a fixed pixel speed (FALL_SPEED).
+  - No sound effects.
 */
 
 let canvas, ctx;
-const BLOCK_SIZE = 24;   // Pixel size of each block cell 
-const COLS = 10;         // Grid columns
-const ROWS = 20;         // Grid rows
-const FALL_SPEED = 80;   // Pixels per second (adjust for smoothness)
+const BLOCK_SIZE = 24;  
+const COLS = 10;        
+const ROWS = 20;        
+const FALL_SPEED = 80;  // pixels per second
 
 let lastTime = 0;
-let accumulated = 0;     // Accumulated time since last update
+let accumulated = 0;  
 let grid;
 let currentShape;
 
-// Tetris shapes (each shape: list of [x, y] cells + color)
 const SHAPES = [
-  {
-    color: '#0ff', // I
-    cells: [[0,0],[1,0],[2,0],[3,0]]
-  },
-  {
-    color: '#ff0', // O
-    cells: [[0,0],[1,0],[0,1],[1,1]]
-  },
-  {
-    color: '#f0f', // T
-    cells: [[0,0],[1,0],[2,0],[1,1]]
-  },
-  {
-    color: '#0f0', // S
-    cells: [[0,1],[1,1],[1,0],[2,0]]
-  },
-  {
-    color: '#f00', // Z
-    cells: [[0,0],[1,0],[1,1],[2,1]]
-  },
-  {
-    color: '#00f', // J
-    cells: [[0,0],[0,1],[1,0],[2,0]]
-  },
-  {
-    color: '#ffa500', // L
-    cells: [[0,0],[1,0],[2,0],[2,1]]
-  }
+  { color: '#0ff', cells: [[0,0],[1,0],[2,0],[3,0]] }, // I
+  { color: '#ff0', cells: [[0,0],[1,0],[0,1],[1,1]] }, // O
+  { color: '#f0f', cells: [[0,0],[1,0],[2,0],[1,1]] }, // T
+  { color: '#0f0', cells: [[0,1],[1,1],[1,0],[2,0]] }, // S
+  { color: '#f00', cells: [[0,0],[1,0],[1,1],[2,1]] }, // Z
+  { color: '#00f', cells: [[0,0],[0,1],[1,0],[2,0]] }, // J
+  { color: '#ffa500', cells: [[0,0],[1,0],[2,0],[2,1]] } // L
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -60,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   requestAnimationFrame(update);
 
-  // Handle tab switching
+  // Tab switching
   const buttons = document.querySelectorAll('.tab-button');
   const contents = document.querySelectorAll('.tab-content');
   buttons.forEach(btn => {
@@ -75,11 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Create an empty grid
 function createGrid(rows, cols) {
-  const arr = [];
+  let arr = [];
   for(let r=0; r<rows; r++){
     arr[r] = [];
     for(let c=0; c<cols; c++){
-      arr[r][c] = null; // empty
+      arr[r][c] = null;
     }
   }
   return arr;
@@ -92,27 +69,25 @@ function resizeCanvas() {
 
 // Spawn a random shape at the top
 function spawnShape(){
-  const index = Math.floor(Math.random() * SHAPES.length);
-  const shapeDef = SHAPES[index];
-  // Copy the shape definition
+  let def = SHAPES[Math.floor(Math.random() * SHAPES.length)];
   currentShape = {
-    color: shapeDef.color,
-    cells: shapeDef.cells.map(([x,y]) => ({x,y})),
-    x: Math.floor(COLS/2) - 1, // spawn near center
+    color: def.color,
+    cells: def.cells.map(([x,y]) => ({x,y})),
+    x: Math.floor(COLS / 2) - 1,
     y: 0
   };
 }
 
-// Animation loop
+// Main update loop
 function update(timestamp) {
-  const delta = (timestamp - lastTime) / 1000; // seconds
+  let delta = (timestamp - lastTime) / 1000; // in seconds
   lastTime = timestamp;
 
   accumulated += delta * FALL_SPEED;
 
-  // If we've accumulated >= 1 pixel's worth of motion
+  // Move the shape down pixel-by-pixel
   while(accumulated >= 1){
-    if(!tryMoveDown()){
+    if(!moveDownOnePixel()){
       placeShape();
       spawnShape();
     }
@@ -123,76 +98,68 @@ function update(timestamp) {
   requestAnimationFrame(update);
 }
 
-// Move the shape down by 1 pixel if no collision
-function tryMoveDown() {
-  // Temporarily shift
-  currentShape.y += 1/ BLOCK_SIZE; 
-  if(collision()){
-    // revert
+// Move shape down 1 pixel if no collision
+function moveDownOnePixel(){
+  currentShape.y += 1 / BLOCK_SIZE; // 1 pixel in grid coords
+  if(checkCollision()){
     currentShape.y -= 1 / BLOCK_SIZE;
     return false;
   }
   return true;
 }
 
-// Check collisions with bottom or existing grid cells
-function collision(){
+// Check collision with bottom or stacked blocks
+function checkCollision(){
   for(const cell of currentShape.cells){
-    const px = cell.x + currentShape.x;
-    const py = cell.y + currentShape.y;
-    // px, py are in grid coordinates => py is float if partial cell
-    const gridX = Math.round(px);
-    const gridY = Math.round(py);
+    const gridX = Math.round(cell.x + currentShape.x);
+    const gridY = Math.round(cell.y + currentShape.y);
 
-    // If the bottom (or sides)
     if(gridX < 0 || gridX >= COLS) return true;
-    if(gridY < 0 || gridY >= ROWS) return true; 
+    if(gridY < 0 || gridY >= ROWS) return true;
     if(grid[gridY]?.[gridX]) return true;
   }
   return false;
 }
 
-// Place shape into the grid
+// Place shape in the grid
 function placeShape(){
   for(const cell of currentShape.cells){
-    const gridX = Math.round(cell.x + currentShape.x);
-    const gridY = Math.round(cell.y + currentShape.y);
-    if(gridY >= 0 && gridY < ROWS){
-      grid[gridY][gridX] = currentShape.color;
+    const gx = Math.round(cell.x + currentShape.x);
+    const gy = Math.round(cell.y + currentShape.y);
+    if(gy >= 0 && gy < ROWS){
+      grid[gy][gx] = currentShape.color;
     }
   }
 }
 
-// Render the grid and current shape
+// Draw the grid and current shape
 function draw(){
-  ctx.clearRect(0,0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw stacked blocks
   for(let r=0; r<ROWS; r++){
     for(let c=0; c<COLS; c++){
-      const color = grid[r][c];
+      let color = grid[r][c];
       if(color){
         drawBlock(c, r, color);
       }
     }
   }
 
-  // Draw current falling shape (with partial y if needed)
+  // Draw current shape
   for(const cell of currentShape.cells){
-    const x = (cell.x + currentShape.x) * BLOCK_SIZE;
-    const y = (cell.y + currentShape.y) * BLOCK_SIZE;
-    drawBlockPx(x, y, currentShape.color);
+    let px = (cell.x + currentShape.x) * BLOCK_SIZE;
+    let py = (cell.y + currentShape.y) * BLOCK_SIZE;
+    drawBlockPx(px, py, currentShape.color);
   }
 }
 
-// Draw a single block in grid coords
+// Draw a block in grid coords
 function drawBlock(cx, cy, color){
-  const px = cx * BLOCK_SIZE;
-  const py = cy * BLOCK_SIZE;
-  drawBlockPx(px, py, color);
+  drawBlockPx(cx * BLOCK_SIZE, cy * BLOCK_SIZE, color);
 }
 
-// Draw a block by pixel coords
+// Draw block by pixel coords
 function drawBlockPx(px, py, color){
   ctx.fillStyle = color;
   ctx.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
