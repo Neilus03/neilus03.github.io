@@ -1,260 +1,160 @@
-// Tetris-like background
-const COLS = 10;
-const ROWS = 20;
-const BLOCK_SIZE = 24; // Size of each cell in pixels
+/*
+  Enhanced Tetris-like animation:
+  - Larger board so blocks can appear anywhere (not just the right side).
+  - Faster drop interval for quicker stacking.
+  - No line clears; once it fills up, it resets.
+*/
 
-// Tetris shapes (in 4x4 grids)
-// Each shape is a 2D array with 1's representing blocks
+const COLS = 12;
+const ROWS = 22;
+const BLOCK_SIZE = 30;
+const DROP_INTERVAL = 250; // ms between moves (faster)
+
 const SHAPES = [
   // I
-  {
-    matrix: [
-      [1, 1, 1, 1],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    color: '#ff0000',
-  },
+  { blocks: [[0,0],[1,0],[2,0],[3,0]], color: '#0ff' },
   // O
-  {
-    matrix: [
-      [1, 1, 0, 0],
-      [1, 1, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    color: '#00ff00',
-  },
+  { blocks: [[0,0],[1,0],[0,1],[1,1]], color: '#ff0' },
   // T
-  {
-    matrix: [
-      [1, 1, 1, 0],
-      [0, 1, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    color: '#ffff00',
-  },
+  { blocks: [[0,0],[1,0],[2,0],[1,1]], color: '#f0f' },
   // S
-  {
-    matrix: [
-      [0, 1, 1, 0],
-      [1, 1, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    color: '#00ffff',
-  },
+  { blocks: [[0,1],[1,1],[1,0],[2,0]], color: '#0f0' },
   // Z
-  {
-    matrix: [
-      [1, 1, 0, 0],
-      [0, 1, 1, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    color: '#ff00ff',
-  },
+  { blocks: [[0,0],[1,0],[1,1],[2,1]], color: '#f00' },
   // J
-  {
-    matrix: [
-      [1, 0, 0, 0],
-      [1, 1, 1, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    color: '#ffa500',
-  },
+  { blocks: [[0,0],[0,1],[1,0],[2,0]], color: '#00f' },
   // L
-  {
-    matrix: [
-      [0, 0, 1, 0],
-      [1, 1, 1, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    color: '#dddd00',
-  },
+  { blocks: [[0,0],[1,0],[2,0],[2,1]], color: '#ffa500' },
 ];
 
 let canvas, ctx;
-let grid; // 2D array for the stacked blocks
+let grid;
 let currentShape;
-let currentX = 0;
-let currentY = 0;
-let dropCounter = 0;
-let dropInterval = 600; // ms
-let lastTime = 0;
+let currentX, currentY;
+let lastDropTime = 0;
 
-document.addEventListener('DOMContentLoaded', init);
-
-function init() {
+document.addEventListener('DOMContentLoaded', () => {
   canvas = document.getElementById('tetris-bg');
   ctx = canvas.getContext('2d');
+
+  // Set canvas size
   resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
-  grid = createMatrix(ROWS, COLS);
-  spawnNewShape();
+  // Create empty grid
+  grid = createGrid(ROWS, COLS);
 
-  // Listen for tab switching
+  spawnShape();
+  requestAnimationFrame(update);
+
+  // Tab switching
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
   tabButtons.forEach((button) => {
     button.addEventListener('click', () => {
       tabButtons.forEach((btn) => btn.classList.remove('active'));
       tabContents.forEach((content) => content.classList.remove('active'));
-
       button.classList.add('active');
-      document
-        .getElementById(button.getAttribute('data-tab'))
-        .classList.add('active');
+      document.getElementById(button.getAttribute('data-tab')).classList.add('active');
     });
   });
+});
 
-  // Start the animation
-  requestAnimationFrame(update);
-}
-
-// Create a 2D array of zeros
-function createMatrix(rows, cols) {
-  const matrix = [];
+function createGrid(rows, cols) {
+  let arr = [];
   for (let r = 0; r < rows; r++) {
-    matrix[r] = new Array(cols).fill(0);
+    arr[r] = [];
+    for (let c = 0; c < cols; c++) {
+      arr[r][c] = null;
+    }
   }
-  return matrix;
+  return arr;
 }
 
-// Resize canvas to fill window
-window.addEventListener('resize', resizeCanvas);
 function resizeCanvas() {
   canvas.width = COLS * BLOCK_SIZE;
   canvas.height = ROWS * BLOCK_SIZE;
 }
 
-// Game loop for the falling blocks
-function update(time = 0) {
-  const deltaTime = time - lastTime;
-  lastTime = time;
-  dropCounter += deltaTime;
+function spawnShape() {
+  let shapeObj = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+  // Copy blocks so we don't mutate the original
+  currentShape = shapeObj.blocks.map((b) => [...b]);
+  currentShape.color = shapeObj.color;
 
-  if (dropCounter > dropInterval) {
-    dropBlock();
-  }
+  // Figure out shape's width to avoid out-of-bounds spawn
+  let maxX = Math.max(...currentShape.map((b) => b[0]));
+  let shapeWidth = maxX + 1;
+  currentX = Math.floor(Math.random() * (COLS - shapeWidth));
+  currentY = 0;
 
-  draw();
-  requestAnimationFrame(update);
-}
-
-// Drop the current shape by one row
-function dropBlock() {
-  currentY++;
-  if (collides(grid, currentShape.matrix, currentX, currentY)) {
-    currentY--;
-    merge(grid, currentShape.matrix, currentX, currentY);
-    spawnNewShape();
-  }
-  dropCounter = 0;
-}
-
-// Merge the shape into the grid
-function merge(grid, shape, offsetX, offsetY) {
-  shape.forEach((row, r) => {
-    row.forEach((value, c) => {
-      if (value) {
-        grid[offsetY + r][offsetX + c] = currentShape.color;
-      }
-    });
-  });
-  // Check if we've stacked to the top -> reset
-  if (checkOverflow()) {
-    grid.forEach((row, r) => {
-      grid[r].fill(0);
-    });
+  // If collision at spawn, reset grid
+  if (collision(currentX, currentY, currentShape)) {
+    grid = createGrid(ROWS, COLS);
   }
 }
 
-// Check if shapes fill the top row
-function checkOverflow() {
-  for (let c = 0; c < COLS; c++) {
-    if (grid[0][c] !== 0) {
+function collision(x, y, shape) {
+  for (let i = 0; i < shape.length; i++) {
+    let [dx, dy] = shape[i];
+    let nx = x + dx;
+    let ny = y + dy;
+    if (nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS) {
+      return true;
+    }
+    if (grid[ny][nx]) {
       return true;
     }
   }
   return false;
 }
 
-// Spawn a new random shape at top
-function spawnNewShape() {
-  const shapeObj = SHAPES[Math.floor(Math.random() * SHAPES.length)];
-  currentShape = {
-    matrix: shapeObj.matrix.map((row) => row.slice()),
-    color: shapeObj.color,
-  };
-  currentX = (COLS / 2) | 0;
-  currentX -= 2; // Center the shape
-  currentY = 0;
-
-  // If it collides right away, reset grid
-  if (collides(grid, currentShape.matrix, currentX, currentY)) {
-    grid.forEach((row, r) => {
-      grid[r].fill(0);
-    });
-  }
+function placeShape(x, y, shape) {
+  shape.forEach(([dx, dy]) => {
+    grid[y + dy][x + dx] = shape.color;
+  });
 }
 
-// Check for collision
-function collides(grid, shape, offsetX, offsetY) {
-  for (let r = 0; r < shape.length; r++) {
-    for (let c = 0; c < shape[r].length; c++) {
-      if (shape[r][c]) {
-        const newY = offsetY + r;
-        const newX = offsetX + c;
-        if (
-          newY < 0 ||
-          newY >= ROWS ||
-          newX < 0 ||
-          newX >= COLS ||
-          grid[newY][newX] !== 0
-        ) {
-          return true;
-        }
-      }
+function update(time = 0) {
+  let delta = time - lastDropTime;
+  if (delta > DROP_INTERVAL) {
+    // Move shape down
+    if (!collision(currentX, currentY + 1, currentShape)) {
+      currentY++;
+    } else {
+      // Place shape
+      placeShape(currentX, currentY, currentShape);
+      // Spawn a new one
+      spawnShape();
     }
+    lastDropTime = time;
   }
-  return false;
+  draw();
+  requestAnimationFrame(update);
 }
 
-// Draw everything
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw stacked blocks
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
-      if (grid[r][c] !== 0) {
-        ctx.fillStyle = grid[r][c];
-        ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+      if (grid[r][c]) {
+        drawBlock(c, r, grid[r][c]);
       }
     }
   }
 
-  // Draw current falling shape
-  drawShape(currentShape.matrix, currentX, currentY, currentShape.color);
+  // Draw current shape
+  currentShape.forEach(([dx, dy]) => {
+    drawBlock(currentX + dx, currentY + dy, currentShape.color);
+  });
 }
 
-function drawShape(shape, offsetX, offsetY, color) {
+function drawBlock(x, y, color) {
   ctx.fillStyle = color;
-  for (let r = 0; r < shape.length; r++) {
-    for (let c = 0; c < shape[r].length; c++) {
-      if (shape[r][c]) {
-        ctx.fillRect(
-          (offsetX + c) * BLOCK_SIZE,
-          (offsetY + r) * BLOCK_SIZE,
-          BLOCK_SIZE,
-          BLOCK_SIZE
-        );
-      }
-    }
-  }
+  ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
 }
