@@ -13,7 +13,7 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Animated pixel-art background */
+/* Pixel art style animated background */
 .animated-bg {
   position: fixed;
   top: 0;
@@ -21,16 +21,17 @@ html, body {
   width: 100%;
   height: 100%;
   background-color: #222;
-  background-image:
-    repeating-linear-gradient(45deg, #444 0, #444 1px, transparent 1px, transparent 10px),
-    repeating-linear-gradient(-45deg, #444 0, #444 1px, transparent 1px, transparent 10px);
+  background-image: 
+    repeating-linear-gradient(45deg, #333 0, #333 1px, transparent 1px, transparent 20px),
+    repeating-linear-gradient(-45deg, #333 0, #333 1px, transparent 1px, transparent 20px);
   background-size: 20px 20px;
-  animation: bgAnim 30s linear infinite;
+  animation: pixelAnim 20s linear infinite;
   z-index: -1;
-  opacity: 0.6;
+  opacity: 0.8;
+  image-rendering: pixelated;
 }
 
-@keyframes bgAnim {
+@keyframes pixelAnim {
   0% {
     background-position: 0 0, 0 0;
   }
@@ -42,8 +43,11 @@ html, body {
 .content {
   position: relative;
   padding: 20px;
-  max-width: 800px;
+  max-width: 900px;
   margin: auto;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid #4fc3f7;
+  border-radius: 8px;
 }
 
 header {
@@ -57,38 +61,48 @@ header h1 {
 
 header p {
   font-size: 1.2em;
-  margin: 5px 0;
+  margin: 10px 0;
 }
 
-.contact-info a {
-  color: #4fc3f7;
-  text-decoration: none;
-}
-
-section {
-  margin: 30px 0;
-}
-
-section h2 {
-  border-bottom: 2px solid #4fc3f7;
-  padding-bottom: 5px;
-  margin-bottom: 10px;
-  font-size: 1.8em;
-}
-
-section h3 {
-  font-size: 1.5em;
+.nav-tabs {
   margin-top: 15px;
 }
 
-section p, section li {
-  margin: 10px 0;
-  line-height: 1.6;
+.nav-tabs button {
+  background: #444;
+  border: none;
+  padding: 10px 20px;
+  color: #fff;
+  cursor: pointer;
+  margin: 0 5px;
+  font-family: inherit;
+  font-size: 1em;
+  transition: background 0.3s;
 }
 
-ul {
-  list-style: disc inside;
-  padding-left: 20px;
+.nav-tabs button.active,
+.nav-tabs button:hover {
+  background: #4fc3f7;
+}
+
+.tab-content {
+  display: none;
+  margin-top: 20px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+section {
+  margin: 20px 0;
+}
+
+section h2 {
+  font-size: 1.8em;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #4fc3f7;
+  padding-bottom: 5px;
 }
 
 .profile-img {
@@ -98,23 +112,46 @@ ul {
   border: 2px solid #fff;
 }
 
+.publication {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  background: #333;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.publication img.teaser-img {
+  width: 100px;
+  height: 100px;
+  margin-right: 15px;
+  border: 2px solid #fff;
+  image-rendering: pixelated;
+}
+
+.pub-info h3 {
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.pub-info p {
+  margin: 5px 0 0 0;
+  font-size: 0.9em;
+}
+
 footer {
   text-align: center;
-  margin-top: 40px;
+  margin-top: 30px;
   padding-top: 20px;
   border-top: 1px solid #4fc3f7;
 }
 
-footer h2 {
-  font-size: 1.8em;
-  margin-bottom: 10px;
-}
-
-.profiles {
+footer ul.profiles {
   list-style: none;
+  padding: 0;
 }
 
-.profiles li {
+footer ul.profiles li {
   display: inline;
   margin: 0 10px;
 }
