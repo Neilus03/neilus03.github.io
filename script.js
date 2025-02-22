@@ -1,202 +1,202 @@
 /*
-  Faster Tetris:
-  - Wider area.
-  - Random x-spawn, random shape, random rotation.
-  - After each shape lands, we play a short beep.
-  - If stack hits top, reset grid.
+  Smoother Tetris animation approach:
+  - Blocks fall continuously at a certain speed (pixels per second).
+  - Each block is placed once it hits bottom or a stacked block.
+  - A new shape spawns afterward.
 */
 
-const COLS = 16;
-const ROWS = 24;
-const BLOCK_SIZE = 25;
-const DROP_INTERVAL = 200; // ms
-const SHAPES = [
-  // I
-  { blocks: [[0,0],[1,0],[2,0],[3,0]], color: '#0ff' },
-  // O
-  { blocks: [[0,0],[1,0],[0,1],[1,1]], color: '#ff0' },
-  // T
-  { blocks: [[0,0],[1,0],[2,0],[1,1]], color: '#f0f' },
-  // S
-  { blocks: [[0,1],[1,1],[1,0],[2,0]], color: '#0f0' },
-  // Z
-  { blocks: [[0,0],[1,0],[1,1],[2,1]], color: '#f00' },
-  // J
-  { blocks: [[0,0],[0,1],[1,0],[2,0]], color: '#00f' },
-  // L
-  { blocks: [[0,0],[1,0],[2,0],[2,1]], color: '#ffa500' },
-];
-
 let canvas, ctx;
+const BLOCK_SIZE = 24;   // Pixel size of each block cell
+const COLS = 10;         // Grid columns
+const ROWS = 20;         // Grid rows
+const FALL_SPEED = 80;   // Pixels per second (adjust for smoothness)
+
+let lastTime = 0;
+let accumulated = 0;     // Accumulated time since last update
 let grid;
 let currentShape;
-let currentX, currentY;
-let lastDropTime = 0;
 
-// We'll generate a beep sound in code when shape lands
-let audioCtx;
+// Tetris shapes (each shape: list of [x, y] cells + color)
+const SHAPES = [
+  {
+    color: '#0ff', // I
+    cells: [[0,0],[1,0],[2,0],[3,0]]
+  },
+  {
+    color: '#ff0', // O
+    cells: [[0,0],[1,0],[0,1],[1,1]]
+  },
+  {
+    color: '#f0f', // T
+    cells: [[0,0],[1,0],[2,0],[1,1]]
+  },
+  {
+    color: '#0f0', // S
+    cells: [[0,1],[1,1],[1,0],[2,0]]
+  },
+  {
+    color: '#f00', // Z
+    cells: [[0,0],[1,0],[1,1],[2,1]]
+  },
+  {
+    color: '#00f', // J
+    cells: [[0,0],[0,1],[1,0],[2,0]]
+  },
+  {
+    color: '#ffa500', // L
+    cells: [[0,0],[1,0],[2,0],[2,1]]
+  }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
   canvas = document.getElementById('tetris-bg');
   ctx = canvas.getContext('2d');
+
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
   grid = createGrid(ROWS, COLS);
-
   spawnShape();
+
   requestAnimationFrame(update);
 
-  // Manage tab switching
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const tabContents = document.querySelectorAll('.tab-content');
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      tabButtons.forEach(btn => btn.classList.remove('active'));
-      tabContents.forEach(content => content.classList.remove('active'));
-      button.classList.add('active');
-      document.getElementById(button.getAttribute('data-tab')).classList.add('active');
+  // Handle tab switching
+  const buttons = document.querySelectorAll('.tab-button');
+  const contents = document.querySelectorAll('.tab-content');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      contents.forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
     });
   });
-
-  // Prepare a simple audio context for beep
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 });
+
+// Create an empty grid
+function createGrid(rows, cols) {
+  const arr = [];
+  for(let r=0; r<rows; r++){
+    arr[r] = [];
+    for(let c=0; c<cols; c++){
+      arr[r][c] = null; // empty
+    }
+  }
+  return arr;
+}
 
 function resizeCanvas() {
   canvas.width = COLS * BLOCK_SIZE;
   canvas.height = ROWS * BLOCK_SIZE;
 }
 
-function createGrid(rows, cols) {
-  let arr = [];
-  for (let r = 0; r < rows; r++) {
-    arr[r] = [];
-    for (let c = 0; c < cols; c++) {
-      arr[r][c] = null;
-    }
-  }
-  return arr;
+// Spawn a random shape at the top
+function spawnShape(){
+  const index = Math.floor(Math.random() * SHAPES.length);
+  const shapeDef = SHAPES[index];
+  // Copy the shape definition
+  currentShape = {
+    color: shapeDef.color,
+    cells: shapeDef.cells.map(([x,y]) => ({x,y})),
+    x: Math.floor(COLS/2) - 1, // spawn near center
+    y: 0
+  };
 }
 
-function spawnShape() {
-  let shapeObj = SHAPES[Math.floor(Math.random() * SHAPES.length)];
-  // Copy shape
-  currentShape = shapeObj.blocks.map(b => [...b]);
-  currentShape.color = shapeObj.color;
+// Animation loop
+function update(timestamp) {
+  const delta = (timestamp - lastTime) / 1000; // seconds
+  lastTime = timestamp;
 
-  // Possibly rotate randomly
-  let times = Math.floor(Math.random() * 4);
-  for(let i = 0; i < times; i++){
-    rotateClockwise(currentShape);
-  }
+  accumulated += delta * FALL_SPEED;
 
-  // Now random x within board
-  let maxX = Math.max(...currentShape.map(b => b[0]));
-  let shapeWidth = maxX + 1;
-  currentX = Math.floor(Math.random() * (COLS - shapeWidth));
-  currentY = 0;
-
-  // If collision at spawn => reset
-  if(collision(currentX, currentY, currentShape)){
-    grid = createGrid(ROWS, COLS);
-  }
-}
-
-// Rotate shape clockwise
-function rotateClockwise(shape) {
-  // shape: array of [x,y]
-  for(let i = 0; i < shape.length; i++){
-    let x = shape[i][0];
-    let y = shape[i][1];
-    // Rotation around (0,0): newX = y, newY = -x
-    // but we keep them positive => shift if needed
-    shape[i][0] = y;
-    shape[i][1] = -x;
-  }
-  // Now shape may be negative y => shift up
-  let minY = Math.min(...shape.map(b => b[1]));
-  if(minY < 0){
-    shape.forEach(b => b[1] -= minY);
-  }
-}
-
-// Basic collision check
-function collision(x, y, shape){
-  for(let i = 0; i < shape.length; i++){
-    let [dx, dy] = shape[i];
-    let nx = x + dx;
-    let ny = y + dy;
-    if(nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS) {
-      return true;
-    }
-    if(grid[ny][nx]) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function placeShape(x, y, shape) {
-  shape.forEach(([dx, dy]) => {
-    grid[y + dy][x + dx] = shape.color;
-  });
-  // Play beep
-  playBeep();
-}
-
-function update(time=0) {
-  let delta = time - lastDropTime;
-  if(delta > DROP_INTERVAL) {
-    if(!collision(currentX, currentY + 1, currentShape)){
-      currentY++;
-    } else {
-      placeShape(currentX, currentY, currentShape);
+  // If we've accumulated >= 1 pixel's worth of motion
+  while(accumulated >= 1){
+    if(!tryMoveDown()){
+      placeShape();
       spawnShape();
     }
-    lastDropTime = time;
+    accumulated -= 1;
   }
+
   draw();
   requestAnimationFrame(update);
 }
 
-function draw() {
+// Move the shape down by 1 pixel if no collision
+function tryMoveDown() {
+  // Temporarily shift
+  currentShape.y += 1/ BLOCK_SIZE; 
+  if(collision()){
+    // revert
+    currentShape.y -= 1 / BLOCK_SIZE;
+    return false;
+  }
+  return true;
+}
+
+// Check collisions with bottom or existing grid cells
+function collision(){
+  for(const cell of currentShape.cells){
+    const px = cell.x + currentShape.x;
+    const py = cell.y + currentShape.y;
+    // px, py are in grid coordinates => py is float if partial cell
+    const gridX = Math.round(px);
+    const gridY = Math.round(py);
+
+    // If the bottom (or sides)
+    if(gridX < 0 || gridX >= COLS) return true;
+    if(gridY < 0 || gridY >= ROWS) return true; 
+    if(grid[gridY]?.[gridX]) return true;
+  }
+  return false;
+}
+
+// Place shape into the grid
+function placeShape(){
+  for(const cell of currentShape.cells){
+    const gridX = Math.round(cell.x + currentShape.x);
+    const gridY = Math.round(cell.y + currentShape.y);
+    if(gridY >= 0 && gridY < ROWS){
+      grid[gridY][gridX] = currentShape.color;
+    }
+  }
+}
+
+// Render the grid and current shape
+function draw(){
   ctx.clearRect(0,0, canvas.width, canvas.height);
 
   // Draw stacked blocks
-  for(let r = 0; r < ROWS; r++){
-    for(let c = 0; c < COLS; c++){
-      if(grid[r][c]){
-        drawBlock(c, r, grid[r][c]);
+  for(let r=0; r<ROWS; r++){
+    for(let c=0; c<COLS; c++){
+      const color = grid[r][c];
+      if(color){
+        drawBlock(c, r, color);
       }
     }
   }
 
-  // Draw current shape
-  for(let i=0; i<currentShape.length; i++){
-    let [dx, dy] = currentShape[i];
-    drawBlock(currentX + dx, currentY + dy, currentShape.color);
+  // Draw current falling shape (with partial y if needed)
+  for(const cell of currentShape.cells){
+    const x = (cell.x + currentShape.x) * BLOCK_SIZE;
+    const y = (cell.y + currentShape.y) * BLOCK_SIZE;
+    drawBlockPx(x, y, currentShape.color);
   }
 }
 
-function drawBlock(x, y, color) {
-  ctx.fillStyle = color;
-  ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+// Draw a single block in grid coords
+function drawBlock(cx, cy, color){
+  const px = cx * BLOCK_SIZE;
+  const py = cy * BLOCK_SIZE;
+  drawBlockPx(px, py, color);
 }
 
-// Simple beep generator
-function playBeep(){
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'square';
-  osc.frequency.setValueAtTime(220, audioCtx.currentTime);
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-
-  osc.start();
-  // Stop after 0.1s
-  osc.stop(audioCtx.currentTime + 0.1);
+// Draw a block by pixel coords
+function drawBlockPx(px, py, color){
+  ctx.fillStyle = color;
+  ctx.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
 }
