@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Neil De La Fuente - ML Researcher</title>
   <!-- Retro Pixel Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" 
-    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Canvas for Tetris-like falling blocks -->
+  <!-- Tetris Canvas -->
   <canvas id="tetris-bg"></canvas>
 
   <div class="container">
@@ -21,59 +23,79 @@
       <div class="nav-tabs">
         <button class="tab-button active" data-tab="about">About</button>
         <button class="tab-button" data-tab="publications">Publications</button>
+        <button class="tab-button" data-tab="blog">Blog</button>
       </div>
     </header>
 
-    <!-- About Tab -->
+    <!-- ABOUT TAB -->
     <div id="about" class="tab-content active">
       <section>
         <h2>About Me</h2>
         <p>
-          Hi, I'm Neil. I'm deeply interested in deep learning, computer vision, 
-          and NLP. Currently, I'm working on a 4D generation research project at TUM, 
-          exploring new ways to learn and model complex spatiotemporal data. 
-          I also focus on self-supervised learning for video analysis and have published 
-          several papers on applying AI for medical imaging. Outside of research, I 
-          enjoy discovering better approaches to data efficiency and representation 
-          learning, as well as sharing knowledge through collaborative research.
+          Hi, I'm Neil. I'm an AI student and researcher from Barcelona, focusing on deep learning,
+          computer vision, and NLP. I'm currently working on 4D generation at TUM under the
+          supervision of Prof. Daniel Cremers. I have also worked at the Computer Vision Center (CVC)
+          with Dr. Jorge Bernal, and at HiTZ (Basque Center for Language Technologies) with
+          Dr. Eneko Agirre. My interests revolve around self-supervised learning, video understanding,
+          and generative modeling.
         </p>
-        <!-- Placeholder for your profile picture -->
-        <img src="profile-placeholder.jpg" alt="Profile" class="profile-img"/>
+        <img src="profile-placeholder.jpg" alt="Profile" class="profile-img" />
       </section>
     </div>
 
-    <!-- Publications Tab -->
+    <!-- PUBLICATIONS TAB -->
     <div id="publications" class="tab-content">
       <section>
         <h2>Publications</h2>
         <div class="publication">
-          <img src="teaser-placeholder.jpg" alt="Teaser" class="teaser-img"/>
+          <img src="teaser-placeholder.jpg" alt="Teaser" class="teaser-img" />
           <div class="pub-info">
             <h3>A Comparative Study of Deep Reinforcement Learning Models</h3>
             <p>KDD 2024</p>
           </div>
         </div>
         <div class="publication">
-          <img src="teaser-placeholder.jpg" alt="Teaser" class="teaser-img"/>
+          <img src="teaser-placeholder.jpg" alt="Teaser" class="teaser-img" />
           <div class="pub-info">
             <h3>Automatic Assessment of Cleanliness in EGD Images</h3>
             <p>MIUA 2024</p>
           </div>
         </div>
         <div class="publication">
-          <img src="teaser-placeholder.jpg" alt="Teaser" class="teaser-img"/>
+          <img src="teaser-placeholder.jpg" alt="Teaser" class="teaser-img" />
           <div class="pub-info">
             <h3>Enhancing Image Classification in Small & Unbalanced Datasets</h3>
             <p>MICCAI 2024</p>
           </div>
         </div>
         <div class="publication">
-          <img src="teaser-placeholder.jpg" alt="Teaser" class="teaser-img"/>
+          <img src="teaser-placeholder.jpg" alt="Teaser" class="teaser-img" />
           <div class="pub-info">
             <h3>Game Theory & Multi-Agent Reinforcement Learning</h3>
             <p>arXiv Pre-Print</p>
           </div>
         </div>
+      </section>
+    </div>
+
+    <!-- BLOG TAB -->
+    <div id="blog" class="tab-content">
+      <section>
+        <h2>Blog</h2>
+        <article class="blog-entry">
+          <h3>Blog Entry 1</h3>
+          <p>
+            This is a placeholder for your first blog post. You can write about your
+            latest research ideas, interesting breakthroughs, or personal experiences in AI.
+          </p>
+        </article>
+        <article class="blog-entry">
+          <h3>Blog Entry 2</h3>
+          <p>
+            Another placeholder entry. Share updates on your ongoing projects, or
+            discuss anything else that might interest your readers.
+          </p>
+        </article>
       </section>
     </div>
 
