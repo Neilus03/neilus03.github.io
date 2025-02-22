@@ -6,7 +6,7 @@
 */
 
 let canvas, ctx;
-const BLOCK_SIZE = 24;   // Pixel size of each block cell
+const BLOCK_SIZE = 24;   // Pixel size of each block cell 
 const COLS = 10;         // Grid columns
 const ROWS = 20;         // Grid rows
 const FALL_SPEED = 80;   // Pixels per second (adjust for smoothness)
