@@ -1,4 +1,4 @@
-/*
+/* 
   MULTI-SHAPE TETRIS BACKGROUND:
   - Spawns multiple shapes at intervals.
   - Each shape falls smoothly from top to bottom.
