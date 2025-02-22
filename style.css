@@ -12,35 +12,16 @@ body {
   font-family: 'Press Start 2P', monospace;
   background: #000;
   color: #fff;
-  overflow: hidden; /* The container can scroll if needed */
+  overflow: hidden; /* Container will scroll if needed */
 }
 
-/* ANIMATED GRADIENT BACKGROUND (behind the Tetris canvas) */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /* Multi-color gradient that shifts */
-  background: linear-gradient(45deg, #ff00c8, #00ffea, #a800ff, #ff0000);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-  z-index: -3;
-}
-
-/* Keyframes for the gradient shift */
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+/* DYNAMIC COLOR CYCLING FOR NAME & BORDERS */
+@keyframes neonCycle {
+  0%   { color: #f0f;   border-color: #f0f; }
+  25%  { color: #0ff;   border-color: #0ff; }
+  50%  { color: #ff0;   border-color: #ff0; }
+  75%  { color: #f00;   border-color: #f00; }
+  100% { color: #f0f;   border-color: #f0f; }
 }
 
 /* TETRIS BACKGROUND CANVAS */
@@ -48,7 +29,7 @@ body::before {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: -2; /* Above gradient, behind content */
+  z-index: -2;
 }
 
 /* MAIN CONTAINER */
@@ -61,11 +42,12 @@ body::before {
   right: 0;
   margin: auto;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  border: 2px solid #fff;
+  background: rgba(0, 0, 0, 0.8);
+  border: 3px solid #f0f; /* default border color */
   border-radius: 8px;
   max-height: 100vh;
   overflow-y: auto;
+  animation: neonCycle 5s linear infinite; /* animate container border color */
 }
 
 /* HEADER */
@@ -75,8 +57,9 @@ header {
 }
 
 header h1 {
-  font-size: 1.3em;
+  font-size: 1.4em;
   margin-bottom: 5px;
+  animation: neonCycle 5s linear infinite; /* animate name color */
 }
 
 header p {
@@ -136,7 +119,7 @@ header p {
   width: 100px;
   margin: 15px auto;
   border: 2px solid #fff;
-  image-rendering: pixelated; /* Crisp scaling for low-res images */
+  image-rendering: pixelated; 
 }
 
 /* PUBLICATIONS SECTION */
