@@ -1,4 +1,4 @@
-/* RESET  */
+/* RESET */
 * {
   margin: 0;
   padding: 0;
@@ -12,8 +12,8 @@ html, body {
   font-family: 'Press Start 2P', monospace;
   background: #000; /* pure black behind the canvas */
   color: #fff;
-  overflow: hidden; /* We'll handle scroll inside .container */
-  line-height: 1.6; /* Add vertical spacing so text isn't cramped */
+  overflow: hidden; /* We'll manage scroll inside .container */
+  line-height: 1.6;
 }
 
 /* CANVAS FOR TETRIS */
@@ -29,10 +29,10 @@ html, body {
   width: 0.6em;
 }
 ::-webkit-scrollbar-track {
-  background: #111; /* track color */
+  background: #111;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #333; /* thumb color */
+  background-color: #333;
   border-radius: 5px;
   border: 1px solid #000;
 }
@@ -51,7 +51,7 @@ html, body {
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.8);
   max-height: 100vh;
-  overflow-y: auto; /* custom scrollbar used */
+  overflow-y: auto; 
 }
 
 /* HEADER */
@@ -63,7 +63,7 @@ header {
 header h1 {
   font-size: 1.4em;
   margin-bottom: 5px;
-  color: #0ff; /* same highlight color */
+  color: #0ff;
 }
 
 header p {
