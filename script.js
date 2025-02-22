@@ -1,26 +1,30 @@
 /*
-  MULTI-SHAPE TETRIS BACKGROUND + STARFIELD
-  - Spawns multiple Tetris shapes at intervals (SPAWN_INTERVAL).
-  - Each shape falls smoothly at FALL_SPEED (pixels/sec).
-  - Once off-screen, shape is removed.
-  - Also draws a small starfield in the background for extra flair.
-  - No sound effects.
+  MULTI-SHAPE TETRIS BACKGROUND + BASIC LOGS
+  ------------------------------------------
+  1) Spawns multiple Tetris shapes (one every SPAWN_INTERVAL ms).
+  2) Each shape falls smoothly at FALL_SPEED (pixels/sec).
+  3) Once off-screen, shapes are removed from the array.
+  4) Includes console.log statements for debugging.
+  5) No sound effects, no rotation, minimal starfield removed for clarity.
 */
 
-/* --------------------------------- SETUP --------------------------------- */
-
-// The canvas is already in your HTML: <canvas id="tetris-bg"></canvas>
+/* ------------------------- Canvas & Basic Setup ------------------------- */
 const canvas = document.getElementById('tetris-bg');
 const ctx = canvas.getContext('2d');
 
-// Tweak these values as you like:
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+/* ------------------------- Tweakable Parameters ------------------------- */
 const BLOCK_SIZE = 24;       // Tetris block cell size in px
 const FALL_SPEED = 60;       // Tetris shapes fall at 60 px/sec
-const SPAWN_INTERVAL = 2000; // Spawn a new shape every 2000 ms (2 seconds)
-const STAR_COUNT = 80;       // Number of stars in the starfield
-const STAR_SPEED = 20;       // Speed at which stars move downward
+const SPAWN_INTERVAL = 2000; // Spawn a new shape every 2 seconds
 
-// Tetris shapes definition (array of block coords + color)
+/* ------------------------- Tetris Shapes Setup -------------------------- */
 const SHAPES = [
   { color: '#0ff', blocks: [[0,0],[1,0],[2,0],[3,0]] }, // I
   { color: '#ff0', blocks: [[0,0],[1,0],[0,1],[1,1]] }, // O
@@ -31,105 +35,67 @@ const SHAPES = [
   { color: '#ffa500', blocks: [[0,0],[1,0],[2,0],[2,1]] } // L
 ];
 
-// Active Tetris shapes
+// This array holds every shape currently falling
 let shapes = [];
-// Starfield array
-let stars = [];
 
-// Time tracking
-let lastTime = 0;         // last frame time (ms)
-let spawnTimer = 0;       // accumulates time for shape spawns (ms)
+/* ----------------------- Time & Spawn Management ------------------------ */
+let lastFrameTime = 0;
+let spawnAccumulator = 0; // tracks time for next spawn
 
-/* -------------------------- INIT & EVENT LISTENERS ------------------------ */
-
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-// Set up starfield
-function initStars() {
-  stars = [];
-  for (let i = 0; i < STAR_COUNT; i++) {
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      speed: STAR_SPEED + Math.random() * 20, // random speed
-      size: 1 + Math.random() * 2            // star size in px
-    });
-  }
-}
-
-initStars();
-
-/* --------------------------- TETRIS SPAWN/UPDATE -------------------------- */
-
-// Spawns a single Tetris shape at a random x
+// Spawn a single Tetris shape at a random x position
 function spawnShape() {
   const def = SHAPES[Math.floor(Math.random() * SHAPES.length)];
-  shapes.push({
+  const shape = {
     color: def.color,
-    blocks: JSON.parse(JSON.stringify(def.blocks)), // copy block coords
-    x: Math.floor(Math.random() * (canvas.width - 4*BLOCK_SIZE)), // random px
-    y: 0,         // start at top
+    blocks: JSON.parse(JSON.stringify(def.blocks)), // copy coords
+    x: Math.random() * (canvas.width - BLOCK_SIZE*4), // random px in canvas
+    y: -BLOCK_SIZE * 4, // start just above top, so it's visible falling in
     speed: FALL_SPEED
-  });
+  };
+  console.log('Spawning shape:', shape); // LOG for debugging
+  shapes.push(shape);
 }
 
-/* ------------------------------ GAME LOOP --------------------------------- */
-
+/* -------------------------- Animation Loop ----------------------------- */
 function update(timestamp) {
-  // On first call, lastTime is 0, so set it to current
-  if (!lastTime) lastTime = timestamp;
-  let delta = timestamp - lastTime; // ms elapsed since last frame
-  lastTime = timestamp;
+  // If it's the first frame, set lastFrameTime
+  if (!lastFrameTime) lastFrameTime = timestamp;
+  // Calculate elapsed time in ms
+  const deltaMs = timestamp - lastFrameTime;
+  lastFrameTime = timestamp;
 
-  // Update spawn timer
-  spawnTimer += delta;
-  if (spawnTimer >= SPAWN_INTERVAL) {
+  // Accumulate time for shape spawning
+  spawnAccumulator += deltaMs;
+  if (spawnAccumulator >= SPAWN_INTERVAL) {
     spawnShape();
-    spawnTimer = 0;
+    spawnAccumulator = 0;
   }
 
-  // Move existing shapes downward
+  // Convert to seconds for movement
+  const deltaSec = deltaMs / 1000;
+
+  // Move shapes down
   shapes.forEach(shape => {
-    shape.y += (shape.speed * (delta / 1000));  // px = speed * sec
+    shape.y += shape.speed * deltaSec;
   });
 
-  // Remove shapes that have fallen past bottom
-  shapes = shapes.filter(s => s.y < canvas.height + 5*BLOCK_SIZE);
+  // Remove shapes that passed bottom
+  shapes = shapes.filter(s => s.y < canvas.height + BLOCK_SIZE*4);
 
-  // Update stars
-  stars.forEach(star => {
-    star.y += star.speed * (delta / 1000);
-    // If star goes off bottom, wrap to top
-    if (star.y > canvas.height) {
-      star.y = 0;
-      star.x = Math.random() * canvas.width;
-    }
-  });
-
+  // Render
   draw();
+  // Next frame
   requestAnimationFrame(update);
 }
 
-/* ------------------------------- RENDER ----------------------------------- */
-
+/* ----------------------------- Rendering ------------------------------- */
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 1) Draw starfield
-  ctx.fillStyle = '#fff';
-  stars.forEach(star => {
-    ctx.fillRect(star.x, star.y, star.size, star.size);
-  });
-
-  // 2) Draw Tetris shapes
+  // Draw all shapes
   shapes.forEach(shape => {
     shape.blocks.forEach(([bx, by]) => {
+      // Pixel coords of each block
       const px = shape.x + bx * BLOCK_SIZE;
       const py = shape.y + by * BLOCK_SIZE;
       drawBlock(px, py, shape.color);
@@ -145,10 +111,10 @@ function drawBlock(x, y, color) {
   ctx.strokeRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
 }
 
-/* --------------------------- START THE LOOP ------------------------------- */
+/* -------------------------- Start the Loop ----------------------------- */
 requestAnimationFrame(update);
 
-/* ------------------------------ TABS LOGIC -------------------------------- */
+/* --------------------- TAB Switching (Unchanged) ---------------------- */
 document.addEventListener('DOMContentLoaded', () => {
   const tabButtons = document.querySelectorAll('.tab-button');
   const tabContents = document.querySelectorAll('.tab-content');
