@@ -5,26 +5,28 @@
   box-sizing: border-box;
 }
 
-/* Full-screen canvas for stars */
+/* Full-screen canvas for Tetris-like blocks */
 html, body {
   width: 100%;
   height: 100%;
-  overflow: hidden; /* So we don't see scrollbars when stars move */
+  background: #000;
+  overflow: hidden; /* Hide scrollbars for the background animation */
   font-family: 'Press Start 2P', monospace;
-  background: #000; /* Fallback if canvas doesn't render */
   color: #fff;
 }
 
-/* The container holds the content in front of the canvas */
+/* Container for the website content */
 .container {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  padding: 20px;
-  max-width: 900px;
-  margin: auto;
   right: 0;
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 4px solid #ff66ff; /* Neon pink border */
+  border-radius: 8px;
 }
 
 /* Header and Title */
@@ -34,8 +36,9 @@ header {
 }
 
 header h1 {
-  font-size: 2em;
+  font-size: 1.8em;
   margin-bottom: 10px;
+  color: #ff66ff;
 }
 
 header p {
@@ -45,13 +48,13 @@ header p {
 
 /* Navigation Tabs */
 .nav-tabs {
-  margin: 10px 0;
   text-align: center;
+  margin: 10px 0;
 }
 
 .nav-tabs .tab-button {
-  background: #333;
-  border: 2px solid #fff;
+  background: #444;
+  border: 2px solid #ff66ff;
   color: #fff;
   padding: 8px 16px;
   margin: 0 5px;
@@ -63,40 +66,38 @@ header p {
 
 .nav-tabs .tab-button:hover,
 .nav-tabs .tab-button.active {
-  background: #00ffff; /* Light-cyan highlight for active tab */
+  background: #ff66ff; 
   color: #000;
-  border-color: #00ffff;
 }
 
-/* Tab content */
+/* Tab content areas */
 .tab-content {
   display: none;
   margin-top: 20px;
-  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid #ff66ff;
   padding: 15px;
-  border: 2px solid #fff;
   border-radius: 8px;
+  background: #111;
 }
 
 .tab-content.active {
   display: block;
 }
 
-/* Headings inside sections */
 .tab-content h2 {
-  font-size: 1.2em;
+  font-size: 1em;
   margin-bottom: 10px;
-  border-bottom: 2px solid #fff;
+  border-bottom: 2px solid #ff66ff;
   padding-bottom: 5px;
 }
 
-/* About content */
+/* About section */
 .profile-img {
   display: block;
   width: 100px;
   margin: 15px auto;
   border: 2px solid #fff;
-  image-rendering: pixelated; /* Crisp scaling if it's a low-res image */
+  image-rendering: pixelated;
 }
 
 /* Publications */
@@ -107,7 +108,7 @@ header p {
   margin-bottom: 15px;
   padding: 10px;
   border-radius: 4px;
-  border: 2px solid #fff;
+  border: 2px solid #ff66ff;
 }
 
 .publication .teaser-img {
@@ -121,6 +122,7 @@ header p {
 .pub-info h3 {
   font-size: 0.9em;
   margin: 0;
+  color: #ff66ff;
 }
 
 .pub-info p {
@@ -128,12 +130,12 @@ header p {
   font-size: 0.7em;
 }
 
-/* Footer profiles */
+/* Footer */
 footer {
   text-align: center;
-  margin-top: 40px;
-  border-top: 2px solid #fff;
-  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 2px solid #ff66ff;
+  padding-top: 15px;
 }
 
 footer ul.profiles {
@@ -147,7 +149,7 @@ footer ul.profiles li {
 }
 
 footer a {
-  color: #00ffff;
+  color: #ff66ff;
   text-decoration: none;
   font-size: 0.8em;
 }
