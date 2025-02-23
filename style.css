@@ -122,31 +122,24 @@ header p {
 
 /* ABOUT SECTION (image and text layout) */
 .about-section {
-  display: flex;  /* Use flexbox */
-  flex-wrap: wrap; /* Allow wrapping */
+  display: flex;        /* Use flexbox */
+  flex-direction: row;  /* Arrange items in a row (default) */
+  flex-wrap: wrap;     /* Allow wrapping */
 }
 
 .profile-img {
   border: 2px solid #fff;
   image-rendering: pixelated;
   width: 120px;
-  margin-right: 20px; /* Add space to the right */
-  margin-bottom: 10px;
-  float: left; /* Float the image to the left */
+  margin-right: 20px;     /* Add space to the right */
+  margin-bottom: 10px;    /* Add space below (for when it wraps) */
+  flex-shrink: 0;         /* Don't allow the image to shrink */
 }
 
 .about-text {
-  flex: 1; /* Allow text to fill remaining space */
-  /* No need for min-width, flexbox handles it */
+  flex: 1;            /* Allow text to fill remaining space */
+  min-width: 200px;   /*  Important: Set a minimum width */
 }
-
-/* Clearfix for the floated image */
-.about-section::after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
 
 /* PUBLICATIONS */
 .publication {
