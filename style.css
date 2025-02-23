@@ -133,12 +133,12 @@ header p {
   width: 120px;
   margin-right: 20px;     /* Add space to the right */
   margin-bottom: 10px;    /* Add space below (for when it wraps) */
-  flex-shrink: 0;         /* Don't allow the image to shrink */
+  align-self: flex-start; /* NEW: Align to the top */
 }
 
 .about-text {
   flex: 1;            /* Allow text to fill remaining space */
-  min-width: 200px;   /*  Important: Set a minimum width */
+  min-width: 120px;   /*  Important: Set a minimum width */
 }
 
 /* PUBLICATIONS */
