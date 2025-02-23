@@ -6,20 +6,22 @@
   <title>Neil De La Fuente - ML Researcher</title>
   <!-- Retro Pixel Font --> 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link 
+  <link
     href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
     rel="stylesheet"
   />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Canvas for Tetris animation -->
+  <!-- Canvas for Tetris + starfield -->
   <canvas id="tetris-bg"></canvas>
 
   <div class="container">
     <header>
       <h1>Neil De La Fuente</h1>
       <p>ML Researcher | Barcelona, Spain</p>
+
+      <!-- Nav tabs -->
       <div class="nav-tabs">
         <button class="tab-button active" data-tab="about">About</button>
         <button class="tab-button" data-tab="publications">Publications</button>
@@ -41,8 +43,22 @@
           <a href="http://www.hitz.eus/" target="_blank">HiTZ</a> with Dr. Eneko Agirre.
           My interests revolve around self-supervised learning, video understanding, and generative modeling.
         </p>
-        <!-- Replace with your own profile photo if you want -->
+        <!-- Replace with your own profile photo if you like -->
         <img src="profile-placeholder.jpg" alt="Profile" class="profile-img" />
+
+        <!-- Just for debugging: a button to spawn a shape manually -->
+        <div style="text-align:center; margin-top:20px;">
+          <button id="spawnButton" style="
+            background:#0ff;
+            color:#000;
+            border:none;
+            padding:10px;
+            font-family:inherit;
+            cursor:pointer;
+          ">
+            Spawn a Tetris Shape
+          </button>
+        </div>
       </section>
     </div>
 
@@ -68,7 +84,6 @@
         </div>
 
         <div class="publication">
-          <!-- Using a landscape placeholder (160×90) for your medical_vae.png -->
           <img src="figs/medical_vae.png" alt="Teaser" class="teaser-img" />
           <div class="pub-info">
             <h3>Enhancing Image Classification in Small & Unbalanced Datasets</h3>
@@ -100,13 +115,14 @@
         <article class="blog-entry">
           <h3>Blog Entry 2</h3>
           <p>
-            Recently explored advanced generative modeling for medical imaging. 
+            Recently explored advanced generative modeling for medical imaging.
             Excited about applying these ideas in real-world research.
           </p>
         </article>
       </section>
     </div>
 
+    <!-- Footer -->
     <footer>
       <ul class="profiles">
         <li><a href="https://github.com/Neilus03" target="_blank">GitHub</a></li>
