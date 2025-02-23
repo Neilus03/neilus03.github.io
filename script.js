@@ -1,5 +1,5 @@
 /*
-  MULTI-SHAPE TETRIS + LOGS + MANUAL SPAWN
+  MULTI-SHAPE TETRIS + LOGS + MANUAL SPAWN 
   - Spawns shapes every SPAWN_INTERVAL ms at random x, falling at FALL_SPEED px/sec.
   - Click "Spawn a Tetris Shape" in the About tab to see if you can force a shape.
   - Check dev console for "Spawning shape" logs every time a shape is created.
