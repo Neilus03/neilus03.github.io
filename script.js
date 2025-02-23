@@ -1,13 +1,12 @@
 /*
-  MULTI-SHAPE TETRIS BACKGROUND + STARFIELD + LOGS
-  1) Spawns shapes automatically every SPAWN_INTERVAL ms, each falling at FALL_SPEED px/sec.
-  2) Also has a "Spawn a Tetris Shape" button for manual spawn debugging.
-  3) Includes a basic starfield behind the Tetris blocks.
-  4) Console logs each shape spawn and shape array length so we know it's working.
+  MULTI-SHAPE TETRIS + LOGS + MANUAL SPAWN
+  - Spawns shapes every SPAWN_INTERVAL ms at random x, falling at FALL_SPEED px/sec.
+  - Click "Spawn a Tetris Shape" in the About tab to see if you can force a shape.
+  - Check dev console for "Spawning shape" logs every time a shape is created.
 */
 
 ////////////////////////////////////////////////////////////////////////////////
-// CANVAS SETUP
+// CANVAS
 ////////////////////////////////////////////////////////////////////////////////
 const canvas = document.getElementById('tetris-bg');
 const ctx = canvas.getContext('2d');
@@ -22,57 +21,33 @@ resizeCanvas();
 ////////////////////////////////////////////////////////////////////////////////
 // PARAMETERS
 ////////////////////////////////////////////////////////////////////////////////
-const BLOCK_SIZE = 24;        // size of a Tetris cell in px
-const FALL_SPEED = 60;        // Tetris shapes fall at 60 px/sec
-const SPAWN_INTERVAL = 2000;  // spawn a shape every 2 seconds
-const STAR_COUNT = 60;        // how many stars
-const STAR_SPEED = 30;        // star fall speed
+const BLOCK_SIZE = 24;
+const FALL_SPEED = 60;       // px/sec
+const SPAWN_INTERVAL = 2000; // spawn a shape every 2s
 
-// Tetris definitions
+// Tetris shapes
 const SHAPES = [
-  { color: '#0ff', blocks: [[0,0],[1,0],[2,0],[3,0]] }, // I
-  { color: '#ff0', blocks: [[0,0],[1,0],[0,1],[1,1]] }, // O
-  { color: '#f0f', blocks: [[0,0],[1,0],[2,0],[1,1]] }, // T
-  { color: '#0f0', blocks: [[0,1],[1,1],[1,0],[2,0]] }, // S
-  { color: '#f00', blocks: [[0,0],[1,0],[1,1],[2,1]] }, // Z
-  { color: '#00f', blocks: [[0,0],[0,1],[1,0],[2,0]] }, // J
-  { color: '#ffa500', blocks: [[0,0],[1,0],[2,0],[2,1]] } // L
+  { color: '#0ff', blocks: [[0,0],[1,0],[2,0],[3,0]] },
+  { color: '#ff0', blocks: [[0,0],[1,0],[0,1],[1,1]] },
+  { color: '#f0f', blocks: [[0,0],[1,0],[2,0],[1,1]] },
+  { color: '#0f0', blocks: [[0,1],[1,1],[1,0],[2,0]] },
+  { color: '#f00', blocks: [[0,0],[1,0],[1,1],[2,1]] },
+  { color: '#00f', blocks: [[0,0],[0,1],[1,0],[2,0]] },
+  { color: '#ffa500', blocks: [[0,0],[1,0],[2,0],[2,1]] }
 ];
 
-// Arrays for shapes & stars
-let shapes = [];
-let stars = [];
-
-// Timers
-let lastFrameTime = 0;
-let spawnAccumulator = 0; // how long since last shape spawn
+let shapes = [];             // active shapes array
 
 ////////////////////////////////////////////////////////////////////////////////
-// INIT STARS
-////////////////////////////////////////////////////////////////////////////////
-function initStars() {
-  stars = [];
-  for (let i = 0; i < STAR_COUNT; i++) {
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      speed: STAR_SPEED + Math.random() * 20,
-      size: 1 + Math.random() * 2
-    });
-  }
-}
-initStars();
-
-////////////////////////////////////////////////////////////////////////////////
-// SPAWN ONE SHAPE
+// SPAWN
 ////////////////////////////////////////////////////////////////////////////////
 function spawnShape() {
   const def = SHAPES[Math.floor(Math.random() * SHAPES.length)];
   const shape = {
     color: def.color,
     blocks: JSON.parse(JSON.stringify(def.blocks)), // deep copy
-    x: Math.random() * (canvas.width - BLOCK_SIZE*4),
-    y: -BLOCK_SIZE * 4,  // start above screen
+    x: Math.random() * (canvas.width - BLOCK_SIZE * 4),
+    y: -BLOCK_SIZE * 4, // appear above screen
     speed: FALL_SPEED
   };
   shapes.push(shape);
@@ -80,56 +55,38 @@ function spawnShape() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// MAIN UPDATE LOOP
+// MAIN LOOP
 ////////////////////////////////////////////////////////////////////////////////
+let lastFrameTime = 0;
+let spawnAccumulator = 0;
+
 function update(timestamp) {
-  if (!lastFrameTime) lastFrameTime = timestamp;
+  if(!lastFrameTime) lastFrameTime = timestamp;
   const deltaMs = timestamp - lastFrameTime;
   lastFrameTime = timestamp;
 
-  // spawn logic
   spawnAccumulator += deltaMs;
-  if (spawnAccumulator >= SPAWN_INTERVAL) {
+  if(spawnAccumulator >= SPAWN_INTERVAL) {
     spawnShape();
     spawnAccumulator = 0;
   }
 
+  // movement
   const deltaSec = deltaMs / 1000;
-
-  // move shapes
   shapes.forEach(s => {
     s.y += s.speed * deltaSec;
   });
-  // remove shapes that go beyond bottom
-  shapes = shapes.filter(s => s.y < canvas.height + BLOCK_SIZE*4);
 
-  // move stars
-  stars.forEach(star => {
-    star.y += star.speed * deltaSec;
-    // wrap star if it goes past bottom
-    if (star.y > canvas.height) {
-      star.y = 0;
-      star.x = Math.random() * canvas.width;
-    }
-  });
+  // remove off-screen
+  shapes = shapes.filter(s => s.y < canvas.height + BLOCK_SIZE * 4);
 
   draw();
   requestAnimationFrame(update);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// RENDER
-////////////////////////////////////////////////////////////////////////////////
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // 1. Draw starfield first
-  ctx.fillStyle = '#fff';
-  stars.forEach(star => {
-    ctx.fillRect(star.x, star.y, star.size, star.size);
-  });
-
-  // 2. Draw Tetris shapes
+  // draw shapes
   shapes.forEach(shape => {
     shape.blocks.forEach(([bx, by]) => {
       const px = shape.x + bx * BLOCK_SIZE;
@@ -147,11 +104,10 @@ function drawBlock(x, y, color) {
   ctx.strokeRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
 }
 
-// Start animation
 requestAnimationFrame(update);
 
 ////////////////////////////////////////////////////////////////////////////////
-// TAB SWITCHING
+// TAB SWITCHING & MANUAL SPAWN
 ////////////////////////////////////////////////////////////////////////////////
 document.addEventListener('DOMContentLoaded', () => {
   const tabButtons = document.querySelectorAll('.tab-button');
@@ -166,9 +122,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Debug button to spawn a shape on demand
+  // Manual spawn
   const spawnBtn = document.getElementById('spawnButton');
-  if (spawnBtn) {
+  if(spawnBtn) {
     spawnBtn.addEventListener('click', () => {
       spawnShape();
     });
