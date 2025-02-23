@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.height = 400;
   context.scale(20, 20);
 
-  const colors = [
+    const colors = [
     null,
     '#FF0D72',
     '#0DC2FF',
@@ -32,72 +32,36 @@ document.addEventListener('DOMContentLoaded', () => {
     '#3877FF',
   ];
 
-  const arena = createMatrix(12, 20);
+  const arenaWidth = 12;  // Keep track of arena dimensions
+  const arenaHeight = 20;
+  const arena = createMatrix(arenaWidth, arenaHeight);
 
-  // Array to hold multiple falling pieces
   let fallingPieces = [];
-  const maxFallingPieces = 15; // Limit the number of simultaneous pieces
-  const pieceSpawnInterval = 400; // Spawn a new piece every x milliseconds
-  let lastSpawnTime = 0;
-  const fallSpeed = 0.015; // Control the falling speed.  Lower is slower.
+  const fallSpeed = 0.015;
+
+  // --- Deterministic Filling Logic ---
+  let fillSequence = []; // Array to hold the sequence of blocks
+  let fillSequenceIndex = 0;
+  let fillMode = true;  // Start in fill mode
+  let pauseTime = 5000; // 5 seconds in milliseconds
+  let lastPauseEndTime = 0;
 
 
-  function createMatrix(w, h) {
-    const matrix = [];
-    while (h--) {
-      matrix.push(new Array(w).fill(0));
+    function createMatrix(w, h) {
+        return Array.from({ length: h }, () => Array(w).fill(0));
     }
-    return matrix;
-  }
 
-  function createPiece(type) {
-      // ... (same as before, no changes here) ...
-      if (type === 'T') {
-          return [
-              [0, 0, 0],
-              [1, 1, 1],
-              [0, 1, 0],
-          ];
-      } else if (type === 'O') {
-          return [
-              [2, 2],
-              [2, 2],
-          ];
-      } else if (type === 'L') {
-          return [
-              [0, 3, 0],
-              [0, 3, 0],
-              [0, 3, 3],
-          ];
-      } else if (type === 'J') {
-          return [
-              [0, 4, 0],
-              [0, 4, 0],
-              [4, 4, 0],
-          ];
-      } else if (type === 'I') {
-          return [
-              [0, 5, 0, 0],
-              [0, 5, 0, 0],
-              [0, 5, 0, 0],
-              [0, 5, 0, 0],
-          ];
-      } else if (type === 'S') {
-          return [
-              [0, 6, 6],
-              [6, 6, 0],
-              [0, 0, 0],
-          ];
-      } else if (type === 'Z') {
-          return [
-              [7, 7, 0],
-              [0, 7, 7],
-              [0, 0, 0],
-          ];
-      }
-  }
-
-
+  // We only need 'I' and 'O' pieces (and single blocks) to fill.
+function createPiece(type) {
+    if (type === 'I') {
+        return [[0, 1, 0, 0],[0, 1, 0, 0],[0, 1, 0, 0],[0, 1, 0, 0]];
+    } else if (type === 'O') {
+        return [[2, 2],[2, 2]];
+    } else if (type === 'S') { // Single block
+        return [[3]];
+    }
+    return null; // Should not happen in fill mode.
+}
   function drawMatrix(matrix, offset) {
     matrix.forEach((row, y) => {
       row.forEach((value, x) => {
@@ -113,112 +77,119 @@ document.addEventListener('DOMContentLoaded', () => {
     context.fillStyle = 'rgba(0, 0, 0, 0.3)'; // Semi-transparent black
     context.fillRect(0, 0, canvas.width, canvas.height);
     drawMatrix(arena, { x: 0, y: 0 });
-
-    // Draw all falling pieces
     fallingPieces.forEach(piece => {
         drawMatrix(piece.matrix, piece.pos);
     });
   }
 
-  function merge(arena, piece) {
-    piece.matrix.forEach((row, y) => {
-      row.forEach((value, x) => {
-        if (value !== 0) {
-            const arenaX = x + Math.floor(piece.pos.x);
-            const arenaY = y + Math.floor(piece.pos.y);
+    function merge(arena, piece) {
+        piece.matrix.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value !== 0) {
+                    const arenaX = x + Math.floor(piece.pos.x);
+                    const arenaY = y + Math.floor(piece.pos.y);
 
-            // *** CRITICAL FIX: Check bounds BEFORE accessing arena ***
-            if (arenaY >= 0 && arenaY < arena.length && arenaX >= 0 && arenaX < arena[0].length) {
-                arena[arenaY][arenaX] = value;
-            }
-        }
-      });
-    });
-  }
+                    if (arenaY >= 0 && arenaY < arena.length && arenaX >= 0 && arenaX < arena[0].length) {
+                        arena[arenaY][arenaX] = value;
+                    }
+                }
+            });
+        });
+    }
 
+    function collide(arena, piece) {
+        const m = piece.matrix;
+        const o = piece.pos;
+        for (let y = 0; y < m.length; ++y) {
+            for (let x = 0; x < m[y].length; ++x) {
+                if (m[y][x] !== 0) {
+                    const arenaX = x + Math.floor(o.x);
+                    const arenaY = y + Math.floor(o.y);
 
-function collide(arena, piece) {
-    const m = piece.matrix;
-    const o = piece.pos;
-    for (let y = 0; y < m.length; ++y) {
-        for (let x = 0; x < m[y].length; ++x) {
-            if (m[y][x] !== 0) {
-                const arenaX = x + Math.floor(o.x);
-                const arenaY = y + Math.floor(o.y);
-
-                // *** CRITICAL FIX: Check bounds BEFORE accessing arena ***
-                if (arenaY >= arena.length || arenaX < 0 || arenaX >= arena[0].length || (arena[arenaY] && arena[arenaY][arenaX] !== 0)) {
-                    return true;
+                    if (arenaY >= arena.length || arenaX < 0 || arenaX >= arena[0].length || (arena[arenaY] && arena[arenaY][arenaX] !== 0)) {
+                        return true;
+                    }
                 }
             }
         }
+        return false;
     }
-    return false;
-}
 
-    function playerReset() {
-      const pieces = 'ILJOTSZ';
-      const newPiece = {
-          pos: { x: Math.floor(Math.random() * (arena[0].length - 2)), y: 0 },
-          matrix: createPiece(pieces[pieces.length * Math.random() | 0]),
-      };
+  function generateFillSequence() {
+        fillSequence = []; // Clear previous sequence
+        for (let y = 0; y < arenaHeight; y++) {
+            for (let x = 0; x < arenaWidth; x += 2) {
+                // Use 'O' blocks to fill two columns at a time
+                fillSequence.push({ type: 'O', x: x, y: -2 }); // Start above the screen
+              if (x + 2 >= arenaWidth) {
+                // Use 'I' blocks to fill one column
+                fillSequence.push({ type: 'I', x: x, y: -4 });
+                }
 
-        if (collide(arena, newPiece)) {
-            // Game over - just clear the arena
-            arena.forEach(row => row.fill(0));
-            fallingPieces = []; // Reset falling pieces too, prevents errors
-        } else {
+            }
+        }
+    }
+
+
+    function spawnNextFillPiece() {
+        if (fillSequenceIndex < fillSequence.length) {
+            const nextPieceData = fillSequence[fillSequenceIndex];
+            const newPiece = {
+                pos: { x: nextPieceData.x, y: nextPieceData.y },
+                matrix: createPiece(nextPieceData.type),
+            };
             fallingPieces.push(newPiece);
+            fillSequenceIndex++;
+        } else {
+            // Sequence is complete, switch to pause mode
+            fillMode = false;
+            lastPauseEndTime = performance.now() + pauseTime; // Set when the pause should end
+            fallingPieces = []; // Ensure no pieces are left falling
         }
     }
 
 
- function arenaSweep() {
-        outer: for (let y = arena.length - 1; y > 0; --y) {
-            for (let x = 0; x < arena[y].length; ++x) {
-                if (arena[y][x] === 0) {
-                    continue outer;
-                }
-            }
-
-            const row = arena.splice(y, 1)[0].fill(0);
-            arena.unshift(row);
-            ++y;  // Adjust y since we shifted the rows
-        }
+function arenaSweep() {
+        //No need to sweep in the fill-up mode.
     }
-
-
 
   let lastTime = 0;
 
-  function update(time = 0) {
-    const deltaTime = time - lastTime;
-    lastTime = time;
+    function update(time = 0) {
+        const deltaTime = time - lastTime;
+        lastTime = time;
 
-    // Spawn new pieces
-    if (time - lastSpawnTime > pieceSpawnInterval && fallingPieces.length < maxFallingPieces) {
-      playerReset();
-      lastSpawnTime = time;
+        if (fillMode) {
+            // Fill mode: spawn pieces from the sequence
+            if (fallingPieces.length === 0) { // Only spawn if no pieces are falling
+                spawnNextFillPiece();
+            }
+
+            fallingPieces.forEach(piece => {
+                piece.pos.y += fallSpeed * deltaTime;
+                if (collide(arena, piece)) {
+                  piece.pos.y = Math.floor(piece.pos.y); // Adjust position before merging.
+                    merge(arena, piece);
+                    fallingPieces = fallingPieces.filter(p => p !== piece);
+                }
+            });
+        } else {
+            // Pause mode: wait for the pause to end
+            if (time >= lastPauseEndTime) {
+                // Pause is over, reset for the next fill
+                fillMode = true;
+                fillSequenceIndex = 0;
+                arena.forEach(row => row.fill(0)); // Clear the arena
+                generateFillSequence();  // Regenerate for next cycle
+            }
+        }
+        draw();
+        requestAnimationFrame(update);
     }
 
-    // Update and drop each piece
-    fallingPieces.forEach(piece => {
-      piece.pos.y += fallSpeed * deltaTime; // Use the fallSpeed variable
 
-      if (collide(arena, piece)) {
-        piece.pos.y = Math.floor(piece.pos.y); // Adjust position before merging
-        merge(arena, piece);  // Merge *after* adjusting position
-        arenaSweep();
-          // Remove the piece
-          fallingPieces = fallingPieces.filter(p => p !== piece);
-      }
-    });
 
-    draw();
-    requestAnimationFrame(update);
-  }
-
-  // Initial piece spawn
-  playerReset(); // Start with one piece
+  // Initial setup
+  generateFillSequence(); // Generate the sequence at the start
   update();
 });
