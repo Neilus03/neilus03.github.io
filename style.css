@@ -26,7 +26,7 @@ html, body {
   100% { background-position: 0% 50%; }
 }
 
-/* MAIN CONTAINER */
+/* CONTAINER */
 .container {
   position: absolute;
   top: 0;
@@ -119,21 +119,16 @@ header p {
   padding-bottom: 5px;
 }
 
-/* ABOUT SECTION (image left, text right) */
-.about-section {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
-}
-
+/* FLOATING, CIRCULAR IMAGE */
 .profile-img {
-  width: 100px;
+  float: left;
   border: 2px solid #fff;
   image-rendering: pixelated;
-}
-
-.about-text {
-  flex: 1; /* let text fill the rest of the space */
+  width: 120px;
+  height: 120px;
+  object-fit: cover;  /* so the image is fully covered */
+  border-radius: 50%;
+  margin: 0 15px 15px 0; /* some space so text doesn't butt up */
 }
 
 /* PUBLICATIONS */
