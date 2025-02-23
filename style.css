@@ -131,7 +131,6 @@ header p {
   border: 2px solid #fff;
   image-rendering: pixelated;
   width: 120px;
-  margin: 0 15px 15px 0; /* some space so text doesn't butt up */
 }
 
 
