@@ -1,201 +1,23 @@
-/* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
- 
-/* BODY / FONT */
-html, body {
-  width: 100%;
-  height: 100%;
-  font-family: 'Press Start 2P', monospace;
-  background: #000; /* pure black behind the canvas */
-  color: #fff;
-  overflow: hidden; /* We'll manage scroll inside .container */
-  line-height: 1.6;
+/* Make container narrower and near center so we can see Tetris behind it */
+.container {
+  position: relative;    /* changed from absolute */
+  z-index: 1;            /* so the canvas is behind it (z=0) */
+  margin-top: 50px;      /* some space so we see shapes at top */
+  max-width: 700px;      /* narrower so more space for blocks on sides */
+  background: rgba(0, 0, 0, 0.6); /* slightly more transparent */
+  margin-left: auto;
+  margin-right: auto;
+  border: 3px solid #0ff;
+  border-radius: 8px;
+  padding: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-/* CANVAS */
+/* Also ensure #tetris-bg is behind, no higher than 0 */
 #tetris-bg {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: -1;
-}
-
-/* SCROLLBAR STYLES (for .container) */
-::-webkit-scrollbar {
-  width: 0.6em;
-}
-::-webkit-scrollbar-track {
-  background: #111;
-}
-::-webkit-scrollbar-thumb {
-  background-color: #333;
-  border-radius: 5px;
-  border: 1px solid #000;
-}
-
-/* MAIN CONTAINER */
-.container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-  border: 3px solid #0ff; /* single highlight color */
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.8);
-  max-height: 100vh;
-  overflow-y: auto;
-}
-
-/* HEADER */
-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-header h1 {
-  font-size: 1.4em;
-  margin-bottom: 5px;
-  color: #0ff;
-}
-
-header p {
-  font-size: 0.9em;
-  margin-bottom: 15px;
-}
-
-/* NAV TABS */
-.nav-tabs {
-  margin: 10px 0;
-  text-align: center;
-}
-
-.nav-tabs .tab-button {
-  background: #333;
-  border: 2px solid #fff;
-  color: #fff;
-  padding: 8px 16px;
-  margin: 0 5px;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 0.7em;
-  transition: background 0.3s, color 0.3s;
-}
-
-.nav-tabs .tab-button:hover,
-.nav-tabs .tab-button.active {
-  background: #0ff;
-  color: #000;
-  border-color: #0ff;
-}
-
-/* TAB CONTENT */
-.tab-content {
-  display: none;
-  margin-top: 20px;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 15px;
-  border: 2px solid #fff;
-  border-radius: 8px;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-.tab-content h2 {
-  font-size: 1em;
-  margin-bottom: 10px;
-  border-bottom: 2px solid #fff;
-  padding-bottom: 5px;
-}
-
-/* ABOUT */
-.profile-img {
-  display: block;
-  width: 100px;
-  margin: 15px auto;
-  border: 2px solid #fff;
-  image-rendering: pixelated;
-}
-
-/* PUBLICATIONS */
-.publication {
-  display: flex;
-  align-items: center;
-  background: #222;
-  margin-bottom: 15px;
-  padding: 10px;
-  border-radius: 4px;
-  border: 2px solid #fff;
-}
-
-.publication .teaser-img {
-  width: 160px;   /* landscape style */
-  height: 90px;
-  margin-right: 15px;
-  border: 2px solid #fff;
-  image-rendering: pixelated;
-}
-
-.pub-info h3 {
-  font-size: 0.8em;
-  margin: 0;
-}
-
-.pub-info p {
-  margin: 5px 0 0;
-  font-size: 0.7em;
-}
-
-/* BLOG */
-.blog-entry {
-  background: #222;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 4px;
-  border: 2px solid #fff;
-}
-
-.blog-entry h3 {
-  font-size: 0.9em;
-  margin-bottom: 5px;
-}
-
-.blog-entry p {
-  font-size: 0.8em;
-}
-
-/* FOOTER */
-footer {
-  text-align: center;
-  margin-top: 20px;
-  border-top: 2px solid #fff;
-  padding-top: 20px;
-}
-
-footer ul.profiles {
-  list-style: none;
-  display: inline-block;
-}
-
-footer ul.profiles li {
-  display: inline;
-  margin: 0 10px;
-}
-
-footer a {
-  color: #0ff;
-  text-decoration: none;
-  font-size: 0.8em;
-}
-
-footer a:hover {
-  text-decoration: underline;
+  z-index: 0; /* behind container which is z-index:1 */
 }
