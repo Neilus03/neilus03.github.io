@@ -1,32 +1,49 @@
-/*  RESET */
+/* RESET */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* GLOBAL FONT */
+/* BODY & FONT */
 html, body {
   width: 100%;
   height: 100%;
   font-family: 'Press Start 2P', monospace;
-  background: #000; /* black behind starfield canvas */
   color: #fff;
-  overflow: hidden; /* We will scroll inside .container if needed */
+  overflow: hidden; 
   line-height: 1.6;
+
+  /* Subtle animated gradient background */
+  background: linear-gradient(120deg, #101010, #202020, #101010);
+  background-size: 400% 400%;
+  animation: gradientShift 30s ease infinite;
 }
 
-/* STARFIELD CANVAS */
-#starfield {
-  position: fixed;
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* MAIN CONTAINER */
+.container {
+  position: absolute;
   top: 0;
   left: 0;
-  z-index: -1; /* behind content */
-  width: 100%;
-  height: 100%;
+  right: 0;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  border: 3px solid #0ff;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 1;
 }
 
-/* SCROLLBAR for .container */
+/* SCROLLBAR STYLES */
 ::-webkit-scrollbar {
   width: 0.6em;
 }
@@ -37,23 +54,6 @@ html, body {
   background-color: #333;
   border-radius: 5px;
   border: 1px solid #000;
-}
-
-/* CONTAINER */
-.container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  max-width: 900px;
-  margin: 40px auto; /* some top margin so starfield is visible above */
-  padding: 20px;
-  border: 3px solid #0ff; /* highlight color */
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.7); /* partial transparency */
-  max-height: 90vh;
-  overflow-y: auto;
-  z-index: 1;
 }
 
 /* HEADER */
@@ -119,13 +119,21 @@ header p {
   padding-bottom: 5px;
 }
 
-/* ABOUT SECTION */
+/* ABOUT SECTION (image left, text right) */
+.about-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
 .profile-img {
-  display: block;
   width: 100px;
-  margin: 15px auto;
   border: 2px solid #fff;
   image-rendering: pixelated;
+}
+
+.about-text {
+  flex: 1; /* let text fill the rest of the space */
 }
 
 /* PUBLICATIONS */
