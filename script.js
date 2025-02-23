@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const maxFallingPieces = 15; // Limit the number of simultaneous pieces
   const pieceSpawnInterval = 400; // Spawn a new piece every x milliseconds
   let lastSpawnTime = 0;
+  const fallSpeed = 0.015; // Control the falling speed.  Lower is slower.
 
 
   function createMatrix(w, h) {
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function createPiece(type) {
+      // ... (same as before, no changes here) ...
       if (type === 'T') {
           return [
               [0, 0, 0],
@@ -118,98 +120,104 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function merge(arena, player) {
-    player.matrix.forEach((row, y) => {
+  function merge(arena, piece) {
+    piece.matrix.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value !== 0) {
-          arena[y + Math.floor(player.pos.y)][x + Math.floor(player.pos.x)] = value; // Use floor for merging
+            const arenaX = x + Math.floor(piece.pos.x);
+            const arenaY = y + Math.floor(piece.pos.y);
+
+            // *** CRITICAL FIX: Check bounds BEFORE accessing arena ***
+            if (arenaY >= 0 && arenaY < arena.length && arenaX >= 0 && arenaX < arena[0].length) {
+                arena[arenaY][arenaX] = value;
+            }
         }
       });
     });
   }
 
-function collide(arena, player) {
-    const m = player.matrix;
-    const o = player.pos;
+
+function collide(arena, piece) {
+    const m = piece.matrix;
+    const o = piece.pos;
     for (let y = 0; y < m.length; ++y) {
         for (let x = 0; x < m[y].length; ++x) {
-            // Check for collision using floored positions
-            const arenaX = x + Math.floor(o.x);
-            const arenaY = y + Math.floor(o.y);
-            if (m[y][x] !== 0 &&
-                (arena[arenaY] && arena[arenaY][arenaX]) !== 0) {
-                return true;
+            if (m[y][x] !== 0) {
+                const arenaX = x + Math.floor(o.x);
+                const arenaY = y + Math.floor(o.y);
+
+                // *** CRITICAL FIX: Check bounds BEFORE accessing arena ***
+                if (arenaY >= arena.length || arenaX < 0 || arenaX >= arena[0].length || (arena[arenaY] && arena[arenaY][arenaX] !== 0)) {
+                    return true;
+                }
             }
         }
     }
     return false;
 }
 
-
-  function playerReset() {
+    function playerReset() {
       const pieces = 'ILJOTSZ';
       const newPiece = {
-          pos: { x: (arena[0].length / 2 | 0) - 1, y: 0 },
+          pos: { x: Math.floor(Math.random() * (arena[0].length - 2)), y: 0 },
           matrix: createPiece(pieces[pieces.length * Math.random() | 0]),
-          // Add a random horizontal offset for variety:
-          pos: { x: Math.floor(Math.random() * (arena[0].length - 2)), y: 0 }
       };
 
         if (collide(arena, newPiece)) {
-          // Game over - clear the arena
+            // Game over - just clear the arena
             arena.forEach(row => row.fill(0));
-            fallingPieces = []; // Reset falling pieces too
-        } else{
+            fallingPieces = []; // Reset falling pieces too, prevents errors
+        } else {
             fallingPieces.push(newPiece);
         }
-  }
+    }
+
 
  function arenaSweep() {
-    outer: for (let y = arena.length - 1; y > 0; --y) {
-        for (let x = 0; x < arena[y].length; ++x) {
-            if (arena[y][x] === 0) {
-                continue outer;
+        outer: for (let y = arena.length - 1; y > 0; --y) {
+            for (let x = 0; x < arena[y].length; ++x) {
+                if (arena[y][x] === 0) {
+                    continue outer;
+                }
             }
-        }
 
-        const row = arena.splice(y, 1)[0].fill(0);
-        arena.unshift(row);
-        ++y;  // Adjust y since we shifted the rows
+            const row = arena.splice(y, 1)[0].fill(0);
+            arena.unshift(row);
+            ++y;  // Adjust y since we shifted the rows
+        }
     }
-}
 
-
-    function update(time = 0) {
-      const deltaTime = time - lastTime;
-      lastTime = time;
-
-        // Spawn new pieces
-        if (time - lastSpawnTime > pieceSpawnInterval && fallingPieces.length < maxFallingPieces) {
-            playerReset();
-            lastSpawnTime = time;
-        }
-
-      // Update and drop each piece
-      fallingPieces.forEach(piece => {
-        piece.pos.y += 0.02 * deltaTime;  // Smooth, deltaTime-based falling
-
-        if (collide(arena, piece)) {
-          piece.pos.y = Math.floor(piece.pos.y); // Adjust position before merging
-
-          merge(arena, piece);
-          arenaSweep();
-            // Remove the piece from the array.  Using filter for easy removal.
-            fallingPieces = fallingPieces.filter(p => p !== piece);
-
-        }
-      });
-
-      draw();
-      requestAnimationFrame(update);
-    }
 
 
   let lastTime = 0;
+
+  function update(time = 0) {
+    const deltaTime = time - lastTime;
+    lastTime = time;
+
+    // Spawn new pieces
+    if (time - lastSpawnTime > pieceSpawnInterval && fallingPieces.length < maxFallingPieces) {
+      playerReset();
+      lastSpawnTime = time;
+    }
+
+    // Update and drop each piece
+    fallingPieces.forEach(piece => {
+      piece.pos.y += fallSpeed * deltaTime; // Use the fallSpeed variable
+
+      if (collide(arena, piece)) {
+        piece.pos.y = Math.floor(piece.pos.y); // Adjust position before merging
+        merge(arena, piece);  // Merge *after* adjusting position
+        arenaSweep();
+          // Remove the piece
+          fallingPieces = fallingPieces.filter(p => p !== piece);
+      }
+    });
+
+    draw();
+    requestAnimationFrame(update);
+  }
+
   // Initial piece spawn
   playerReset(); // Start with one piece
   update();
