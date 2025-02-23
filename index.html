@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +13,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Animated gradient background handled via CSS -->
+  <canvas id="tetris"></canvas>
   <div class="container">
     <header>
       <h1>Neil De La Fuente</h1>
@@ -28,21 +27,21 @@
 
     <!-- About -->
     <div id="about" class="tab-content active">
-      <section>
-        <!-- Profile image first, floating on the left -->
+      <section class="about-section">
         <img src="figs/neil.jpg" alt="Profile" class="profile-img">
-
-        <h2>About Me</h2>
-        <p>
-          Hi, I'm Neil. I'm an AI student and researcher from Barcelona, focusing on deep learning,
-          computer vision, and NLP. I'm currently working on 4D generation at 
-          <a href="https://www.tum.de/" target="_blank">TUM</a> under Prof. Daniel Cremers.
-          I have also worked at the 
-          <a href="https://www.cvc.uab.cat/" target="_blank">Computer Vision Center (CVC)</a> 
-          with Dr. Jorge Bernal, and at 
-          <a href="http://www.hitz.eus/" target="_blank">HiTZ</a> with Dr. Eneko Agirre.
-          My interests revolve around self-supervised learning, video understanding, and generative modeling.
-        </p>
+        <div class="about-text">
+            <h2>About Me</h2>
+            <p>
+              Hi, I'm Neil. I'm an AI student and researcher from Barcelona, focusing on deep learning,
+              computer vision, and NLP. I'm currently working on 4D generation at 
+              <a href="https://www.tum.de/" target="_blank">TUM</a> under Prof. Daniel Cremers.
+              I have also worked at the 
+              <a href="https://www.cvc.uab.cat/" target="_blank">Computer Vision Center (CVC)</a> 
+              with Dr. Jorge Bernal, and at 
+              <a href="http://www.hitz.eus/" target="_blank">HiTZ</a> with Dr. Eneko Agirre.
+              My interests revolve around self-supervised learning, video understanding, and generative modeling.
+            </p>
+        </div>
       </section>
     </div>
 
@@ -50,8 +49,6 @@
     <div id="publications" class="tab-content">
       <section>
         <h2>Publications</h2>
-
-        <!-- Example entries -->
         <div class="publication">
           <img src="figs/pah.png" alt="Teaser" class="teaser-img">
           <div class="pub-info">
@@ -59,7 +56,6 @@
             <p>ICML 2025 (Under Review)</p>
           </div>
         </div>
-
         <div class="publication">
           <img src="figs/guidex.png" alt="Teaser" class="teaser-img">
           <div class="pub-info">
@@ -67,7 +63,6 @@
             <p>ACL 2025 (Under Review)</p>
           </div>
         </div>
-
         <div class="publication">
           <img src="figs/breakout.png" alt="Teaser" class="teaser-img">
           <div class="pub-info">
@@ -75,7 +70,6 @@
             <p>KDD 2024</p>
           </div>
         </div>
-
         <div class="publication">
           <img src="figs/medical_vae.png" alt="Teaser" class="teaser-img">
           <div class="pub-info">
@@ -83,7 +77,6 @@
             <p>MICCAI 2024</p>
           </div>
         </div>
-
         <div class="publication">
           <img src="teaser-placeholder.jpg" alt="Teaser" class="teaser-img">
           <div class="pub-info">
@@ -128,12 +121,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
