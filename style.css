@@ -128,7 +128,6 @@ header p {
 
 /* FLOATING IMAGE */
 .profile-img {
-  float: left;
   border: 2px solid #fff;
   image-rendering: pixelated;
   width: 120px;
