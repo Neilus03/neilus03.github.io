@@ -10,18 +10,18 @@
     href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
     rel="stylesheet"
   />
+  <!-- Keep your style.css -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Canvas for Tetris + starfield -->
+  <!-- The background canvas (Tetris + optional starfield) -->
   <canvas id="tetris-bg"></canvas>
 
+  <!-- The main container, smaller and centered -->
   <div class="container">
     <header>
       <h1>Neil De La Fuente</h1>
       <p>ML Researcher | Barcelona, Spain</p>
-
-      <!-- Nav tabs -->
       <div class="nav-tabs">
         <button class="tab-button active" data-tab="about">About</button>
         <button class="tab-button" data-tab="publications">Publications</button>
@@ -29,7 +29,7 @@
       </div>
     </header>
 
-    <!-- About Tab -->
+    <!-- About -->
     <div id="about" class="tab-content active">
       <section>
         <h2>About Me</h2>
@@ -43,10 +43,8 @@
           <a href="http://www.hitz.eus/" target="_blank">HiTZ</a> with Dr. Eneko Agirre.
           My interests revolve around self-supervised learning, video understanding, and generative modeling.
         </p>
-        <!-- Replace with your own profile photo if you like -->
         <img src="profile-placeholder.jpg" alt="Profile" class="profile-img" />
-
-        <!-- Just for debugging: a button to spawn a shape manually -->
+        <!-- Debug button: spawn shape manually -->
         <div style="text-align:center; margin-top:20px;">
           <button id="spawnButton" style="
             background:#0ff;
@@ -62,10 +60,26 @@
       </section>
     </div>
 
-    <!-- Publications Tab -->
+    <!-- Publications -->
     <div id="publications" class="tab-content">
       <section>
         <h2>Publications</h2>
+
+        <div class="publication">
+          <img src="figs/pah.png" alt="Teaser" class="teaser-img" />
+          <div class="pub-info">
+            <h3>Prototype Augmented Hypernetworks</h3>
+            <p>Under Revision: ICML 2025</p>
+          </div>
+        </div>
+
+        <div class="publication">
+          <img src="figs/guidex.png" alt="Teaser" class="teaser-img" />
+          <div class="pub-info">
+            <h3>GUIDEX: uided Synthetic Data Generation for Zero-Shot Information Extraction</h3>
+            <p>Under Revision: ACL 2025</p>
+          </div>
+        </div>
 
         <div class="publication">
           <img src="teaser-placeholder.jpg" alt="Teaser" class="teaser-img" />
@@ -101,7 +115,7 @@
       </section>
     </div>
 
-    <!-- Blog Tab -->
+    <!-- Blog -->
     <div id="blog" class="tab-content">
       <section>
         <h2>Blog</h2>
@@ -122,7 +136,6 @@
       </section>
     </div>
 
-    <!-- Footer -->
     <footer>
       <ul class="profiles">
         <li><a href="https://github.com/Neilus03" target="_blank">GitHub</a></li>
@@ -133,6 +146,7 @@
     </footer>
   </div>
 
+  <!-- The Tetris code -->
   <script src="script.js"></script>
 </body>
 </html>
