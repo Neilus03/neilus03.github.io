@@ -12,7 +12,7 @@ html, body {
   height: 100%;
   font-family: 'Press Start 2P', monospace;
   color: #fff;
-  overflow: hidden; 
+  overflow: hidden;
   line-height: 1.6;
 
   /* Subtle animated gradient background */
@@ -120,24 +120,33 @@ header p {
   padding-bottom: 5px;
 }
 
-/* ABOUT SECTION (image left, text right) */
+/* ABOUT SECTION (image and text layout) */
 .about-section {
-  display: flex;
-  align-items: flex-start; /* Align items to the top */
-  gap: 20px;
+  display: flex;  /* Use flexbox */
+  flex-wrap: wrap; /* Allow wrapping */
 }
 
-/* FLOATING IMAGE */
 .profile-img {
   border: 2px solid #fff;
   image-rendering: pixelated;
   width: 120px;
-  margin-bottom: 10px; /* Add some space below the image */
+  margin-right: 20px; /* Add space to the right */
+  margin-bottom: 10px;
+  float: left; /* Float the image to the left */
 }
 
 .about-text {
-    flex: 1;
+  flex: 1; /* Allow text to fill remaining space */
+  /* No need for min-width, flexbox handles it */
 }
+
+/* Clearfix for the floated image */
+.about-section::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
 
 /* PUBLICATIONS */
 .publication {
@@ -151,8 +160,8 @@ header p {
 }
 
 .publication .teaser-img {
-  width: 160px; 
-  height: 90px; 
+  width: 160px;
+  height: 90px;
   margin-right: 15px;
   border: 2px solid #fff;
   image-rendering: pixelated;
