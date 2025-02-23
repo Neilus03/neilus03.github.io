@@ -1,193 +1,228 @@
-// script.js
-document.addEventListener('DOMContentLoaded', () => {
-  // --- Tab Switching Logic (same as before) ---
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const tabContents = document.querySelectorAll('.tab-content');
-
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabButtons.forEach(b => b.classList.remove('active'));
-      tabContents.forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
-    });
-  });
-
- // --- Tetris Game Logic ---
-  const canvas = document.getElementById('tetris');
-  const context = canvas.getContext('2d');
-
-  canvas.width = 240;
-  canvas.height = 400;
-  context.scale(20, 20);
-
-    const colors = [
-    null,
-    '#FF0D72',
-    '#0DC2FF',
-    '#0DFF72',
-    '#F538FF',
-    '#FF8E0D',
-    '#FFE138',
-    '#3877FF',
-  ];
-
-  const arenaWidth = 12;  // Keep track of arena dimensions
-  const arenaHeight = 20;
-  const arena = createMatrix(arenaWidth, arenaHeight);
-
-  let fallingPieces = [];
-  const fallSpeed = 0.015;
-
-  // --- Deterministic Filling Logic ---
-  let fillSequence = []; // Array to hold the sequence of blocks
-  let fillSequenceIndex = 0;
-  let fillMode = true;  // Start in fill mode
-  let pauseTime = 5000; // 5 seconds in milliseconds
-  let lastPauseEndTime = 0;
-
-
-    function createMatrix(w, h) {
-        return Array.from({ length: h }, () => Array(w).fill(0));
-    }
-
-  // We only need 'I' and 'O' pieces (and single blocks) to fill.
-function createPiece(type) {
-    if (type === 'I') {
-        return [[0, 1, 0, 0],[0, 1, 0, 0],[0, 1, 0, 0],[0, 1, 0, 0]];
-    } else if (type === 'O') {
-        return [[2, 2],[2, 2]];
-    } else if (type === 'S') { // Single block
-        return [[3]];
-    }
-    return null; // Should not happen in fill mode.
+/* style.css */
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-  function drawMatrix(matrix, offset) {
-    matrix.forEach((row, y) => {
-      row.forEach((value, x) => {
-        if (value !== 0) {
-          context.fillStyle = colors[value];
-          context.fillRect(x + offset.x, y + offset.y, 1, 1);
-        }
-      });
-    });
-  }
 
-  function draw() {
-    context.fillStyle = 'rgba(0, 0, 0, 0.3)'; // Semi-transparent black
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    drawMatrix(arena, { x: 0, y: 0 });
-    fallingPieces.forEach(piece => {
-        drawMatrix(piece.matrix, piece.pos);
-    });
-  }
+/* BODY & FONT */
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Press Start 2P', monospace;
+  color: #fff;
+  overflow: hidden;
+  line-height: 1.6;
 
-    function merge(arena, piece) {
-        piece.matrix.forEach((row, y) => {
-            row.forEach((value, x) => {
-                if (value !== 0) {
-                    const arenaX = x + Math.floor(piece.pos.x);
-                    const arenaY = y + Math.floor(piece.pos.y);
+  /* Subtle animated gradient background */
+  background: linear-gradient(120deg, #101010, #202020, #101010);
+  background-size: 400% 400%;
+  animation: gradientShift 30s ease infinite;
+}
 
-                    if (arenaY >= 0 && arenaY < arena.length && arenaX >= 0 && arenaX < arena[0].length) {
-                        arena[arenaY][arenaX] = value;
-                    }
-                }
-            });
-        });
-    }
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-    function collide(arena, piece) {
-        const m = piece.matrix;
-        const o = piece.pos;
-        for (let y = 0; y < m.length; ++y) {
-            for (let x = 0; x < m[y].length; ++x) {
-                if (m[y][x] !== 0) {
-                    const arenaX = x + Math.floor(o.x);
-                    const arenaY = y + Math.floor(o.y);
+/* MAIN CONTAINER */
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  border: 3px solid #0ff;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 1;
+}
 
-                    if (arenaY >= arena.length || arenaX < 0 || arenaX >= arena[0].length || (arena[arenaY] && arena[arenaY][arenaX] !== 0)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
+/* SCROLLBAR STYLES */
+::-webkit-scrollbar {
+  width: 0.6em;
+}
+::-webkit-scrollbar-track {
+  background: #111;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 5px;
+  border: 1px solid #000;
+}
 
-  function generateFillSequence() {
-        fillSequence = []; // Clear previous sequence
-        for (let y = 0; y < arenaHeight; y++) {
-            for (let x = 0; x < arenaWidth; x += 2) {
-                // Use 'O' blocks to fill two columns at a time
-                fillSequence.push({ type: 'O', x: x, y: -2 }); // Start above the screen
-              if (x + 2 >= arenaWidth) {
-                // Use 'I' blocks to fill one column
-                fillSequence.push({ type: 'I', x: x, y: -4 });
-                }
+/* HEADER */
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-            }
-        }
-    }
+header h1 {
+  font-size: 1.4em;
+  margin-bottom: 5px;
+  color: #0ff;
+}
 
+header p {
+  font-size: 0.9em;
+  margin-bottom: 15px;
+}
 
-    function spawnNextFillPiece() {
-        if (fillSequenceIndex < fillSequence.length) {
-            const nextPieceData = fillSequence[fillSequenceIndex];
-            const newPiece = {
-                pos: { x: nextPieceData.x, y: nextPieceData.y },
-                matrix: createPiece(nextPieceData.type),
-            };
-            fallingPieces.push(newPiece);
-            fillSequenceIndex++;
-        } else {
-            // Sequence is complete, switch to pause mode
-            fillMode = false;
-            lastPauseEndTime = performance.now() + pauseTime; // Set when the pause should end
-            fallingPieces = []; // Ensure no pieces are left falling
-        }
-    }
+/* NAV TABS */
+.nav-tabs {
+  margin: 10px 0;
+  text-align: center;
+}
 
+.nav-tabs .tab-button {
+  background: #333;
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 6px 12px;
+  margin: 0 5px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.7em;
+  transition: background 0.3s, color 0.3s;
+}
 
-function arenaSweep() {
-        //No need to sweep in the fill-up mode.
-    }
+.nav-tabs .tab-button:hover,
+.nav-tabs .tab-button.active {
+  background: #0ff;
+  color: #000;
+  border-color: #0ff;
+}
 
-  let lastTime = 0;
+/* TAB CONTENT */
+.tab-content {
+  display: none;
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 15px;
+  border: 2px solid #fff;
+  border-radius: 8px;
+}
 
-    function update(time = 0) {
-        const deltaTime = time - lastTime;
-        lastTime = time;
+.tab-content.active {
+  display: block;
+}
 
-        if (fillMode) {
-            // Fill mode: spawn pieces from the sequence
-            if (fallingPieces.length === 0) { // Only spawn if no pieces are falling
-                spawnNextFillPiece();
-            }
+.tab-content h2 {
+  font-size: 1em;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #fff;
+  padding-bottom: 5px;
+}
 
-            fallingPieces.forEach(piece => {
-                piece.pos.y += fallSpeed * deltaTime;
-                if (collide(arena, piece)) {
-                  piece.pos.y = Math.floor(piece.pos.y); // Adjust position before merging.
-                    merge(arena, piece);
-                    fallingPieces = fallingPieces.filter(p => p !== piece);
-                }
-            });
-        } else {
-            // Pause mode: wait for the pause to end
-            if (time >= lastPauseEndTime) {
-                // Pause is over, reset for the next fill
-                fillMode = true;
-                fillSequenceIndex = 0;
-                arena.forEach(row => row.fill(0)); // Clear the arena
-                generateFillSequence();  // Regenerate for next cycle
-            }
-        }
-        draw();
-        requestAnimationFrame(update);
-    }
+/* ABOUT SECTION (image and text layout) */
+.about-section {
+  display: flex;        /* Use flexbox */
+  flex-direction: row;  /* Arrange items in a row (default) */
+  flex-wrap: wrap;     /* Allow wrapping */
+}
 
-  // Initial setup
-  generateFillSequence(); // Generate the sequence at the start
-  update();
-});
+.profile-img {
+  border: 2px solid #fff;
+  image-rendering: pixelated;
+  width: 120px;
+  margin-right: 20px;     /* Add space to the right */
+  margin-bottom: 10px;    /* Add space below (for when it wraps) */
+  align-self: flex-start; /* NEW: Align to the top */
+}
+
+.about-text {
+  flex: 1;            /* Allow text to fill remaining space */
+  min-width: 120px;   /*  Important: Set a minimum width */
+}
+
+/* PUBLICATIONS */
+.publication {
+  display: flex;
+  align-items: center;
+  background: #222;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 2px solid #fff;
+}
+
+.publication .teaser-img {
+  width: 240px;
+  height: 170px;
+  margin-right: 15px;
+  border: 2px solid #fff;
+  image-rendering: pixelated;
+}
+
+.pub-info h3 {
+  font-size: 0.8em;
+  margin: 0;
+}
+
+.pub-info p {
+  margin: 5px 0 0;
+  font-size: 0.7em;
+}
+
+/* BLOG */
+.blog-entry {
+  background: #222;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  border: 2px solid #fff;
+}
+
+.blog-entry h3 {
+  font-size: 0.9em;
+  margin-bottom: 5px;
+}
+
+.blog-entry p {
+  font-size: 0.8em;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  margin-top: 20px;
+  border-top: 2px solid #fff;
+  padding-top: 20px;
+}
+
+footer ul.profiles {
+  list-style: none;
+  display: inline-block;
+}
+
+footer ul.profiles li {
+  display: inline;
+  margin: 0 10px;
+}
+
+footer a {
+  color: #0ff;
+  text-decoration: none;
+  font-size: 0.8em;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Tetris Canvas Styling */
+#tetris {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0; /* Behind the content */
+    image-rendering: pixelated; /* Keep it blocky! */
+}
