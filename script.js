@@ -1,4 +1,4 @@
-// script.js
+// script.js 
 document.addEventListener('DOMContentLoaded', () => {
   // --- Tab Switching Logic (same as before) ---
   const tabButtons = document.querySelectorAll('.tab-button');
