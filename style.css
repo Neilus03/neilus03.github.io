@@ -434,15 +434,27 @@ p {
 }
 
 .pub-title {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.pub-authors {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  opacity: 0.85;
+}
+
+.pub-authors strong {
+  color: var(--text);
+  font-weight: 600;
 }
 
 .pub-venue {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--accent);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   text-transform: uppercase;
 }
 
