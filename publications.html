@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selected Research — Neil De La Fuente</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ─── Navigation ─────────────────────────────────── -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Neil De La Fuente</a>
+      <div class="nav-links">
+        <a href="index.html">About</a>
+        <a href="publications.html" class="active">Research</a>
+        <a href="blog.html">Blog</a>
+        <a href="podcast.html">Podcast</a>
+        <button id="themeToggle" type="button" class="theme-toggle" aria-label="Toggle Theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ─── Research Content ────────────────────────────── -->
+  <main class="container list-header">
+    <header>
+      <h1 class="section-title">Research</h1>
+      <p class="focus-description">My work focuses on the intersection of deep learning and computer vision.</p>
+    </header>
+
+    <div class="pub-list">
+
+      <!-- Publication 1 -->
+      <article class="pub-item">
+        <img src="figs/pah.png" alt="PAH" class="pub-img">
+        <div class="pub-content">
+          <h3 class="pub-title">Prototype Augmented Hypernetworks</h3>
+          <p class="pub-venue">CVPR 2025 (LatinX in CV)</p>
+          <p class="pub-summary">Investigating hypernetwork architectures for few-shot learning and model adaptation.</p>
+          <div class="pub-links">
+            <a href="https://www.arxiv.org/pdf/2505.07450" target="_blank" class="btn-minimal">Paper ↗</a>
+            <a href="#" class="btn-minimal">Project ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Publication 2 -->
+      <article class="pub-item">
+        <img src="figs/guidex.png" alt="GUIDEX" class="pub-img">
+        <div class="pub-content">
+          <h3 class="pub-title">GUIDEX: Guided Data Generation</h3>
+          <p class="pub-venue">ACL 2025 (Findings)</p>
+          <p class="pub-summary">Synthetic data generation strategies for information extraction tasks.</p>
+          <div class="pub-links">
+            <a href="#" class="btn-minimal">Paper ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Publication 3 -->
+      <article class="pub-item">
+        <img src="figs/breakout.png" alt="RL Study" class="pub-img">
+        <div class="pub-content">
+          <h3 class="pub-title">Deep RL in Visual Environments</h3>
+          <p class="pub-venue">KDD 2024</p>
+          <p class="pub-summary">Evaluating DQN stability across diverse Atari benchmarks.</p>
+          <div class="pub-links">
+            <a href="https://arxiv.org/abs/2407.14151" target="_blank" class="btn-minimal">ArXiv ↗</a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <footer class="container site-footer">
+    <p>© 2026 Neil De La Fuente. ETH Zürich.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

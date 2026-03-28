@@ -1,124 +1,158 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Neil De La Fuente - ML Researcher</title>
-  <!-- Retro Pixel Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link 
-    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
-    rel="stylesheet"
-  >
+  <title>Neil De La Fuente — ETH Zürich | PRS Lab</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <canvas id="tetris"></canvas>
-  <div class="container">
-    <header>
-      <h1>Neil De La Fuente</h1>
-      <p>ML Researcher | Barcelona, Spain</p>
-      <div class="nav-tabs">
-        <button class="tab-button active" data-tab="about">About</button>
-        <button class="tab-button" data-tab="publications">Publications</button>
-        <button class="tab-button" data-tab="blog">Blog</button>
+
+  <!-- ─── Navigation ─────────────────────────────────── -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Neil De La Fuente</a>
+      <div class="nav-links">
+        <a href="index.html" class="active">About</a>
+        <a href="publications.html">Research</a>
+        <a href="blog.html">Blog</a>
+        <a href="podcast.html">Podcast</a>
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
       </div>
-    </header>
-
-    <!-- About -->
-    <div id="about" class="tab-content active">
-      <section class="about-section">
-        <img src="figs/neil.jpg" alt="Profile" class="profile-img">
-        <div class="about-text">
-            <h2>About Me</h2>
-            <p>
-              Hi, I'm Neil. I'm an AI student and researcher from The Basque Country, focusing on deep learning,
-              computer vision, and NLP. I'm currently working on 4D generation at 
-              <a href="https://www.tum.de/" target="_blank">TUM</a> under Prof. Daniel Cremers.
-              I have also worked at the 
-              <a href="https://www.cvc.uab.cat/" target="_blank">CVC</a> 
-              with Dr. Jorge Bernal, and at 
-              <a href="http://www.hitz.eus/" target="_blank">HiTZ</a> with Dr. Eneko Agirre.
-              My interests revolve around self-supervised learning, video understanding, 3D computer vision, and generative modeling.
-            </p>
-        </div>
-      </section>
     </div>
+  </nav>
 
-    <!-- Publications -->
-    <div id="publications" class="tab-content">
-      <section>
-        <h2>Publications</h2>
-        <div class="publication">
-          <img src="figs/pah.png" alt="Teaser" class="teaser-img">
-          <div class="pub-info">
-            <h3>Prototype Augmented Hypernetworks</h3> <a href="https://www.arxiv.org/pdf/2505.07450" target="_blank">(Link)</a>
-            <p> CVPR 2025 (LatinX in CV)</p>
-          </div>
-        </div>
-        <div class="publication">
-          <img src="figs/guidex.png" alt="Teaser" class="teaser-img">
-          <div class="pub-info">
-            <h3>GUIDEX: Guided Synthetic Data Generation for Zero-Shot IE</h3> (Link soon)</a>
-            <p>ACL 2025 (Findings)</p>
-          </div>
-        </div>
-        <div class="publication">
-          <img src="figs/breakout.png" alt="Teaser" class="teaser-img">
-          <div class="pub-info">
-            <h3>A Comparative Study of Deep Reinforcement Learning Models</h3> <a href="https://arxiv.org/abs/2407.14151" target="_blank">(Link)</a>
-            <p>KDD 2024</p>
-          </div>
-        </div>
-        <div class="publication">
-          <img src="figs/medical_vae.png" alt="Teaser" class="teaser-img">
-          <div class="pub-info">
-            <h3>Enhancing Image Classification in Small & Unbalanced Datasets</h3> <a href="https://arxiv.org/abs/2409.10286" target="_blank">(Link)</a>
-            <p>MICCAI 2024</p>
-          </div>
-        </div>
-        <div class="publication">
-          <img src="figs/gametheoryandmultiagentrl.png" alt="Teaser" class="teaser-img">
-          <div class="pub-info">
-            <h3>Game Theory & Multi-Agent Reinforcement Learning</h3> <a href="https://arxiv.org/abs/2412.20523" target="_blank">(Link)</a>
-            <p>arXiv Pre-Print</p>
-          </div>
-        </div>
-      </section>
-    </div>
+  <!-- ─── Hero Section ──────────────────────────────── -->
+  <main class="container">
+    <section class="bio-grid">
 
-    <!-- Blog -->
-    <div id="blog" class="tab-content">
-      <section>
-        <h2>Blog</h2>
-        <article class="blog-entry">
-          <h3>Blog Entry 1</h3>
-          <p>
-            Welcome to my blog! I'll share my thoughts on AI, 4D generation,
-            and interesting aspects of deep learning and computer vision.
-          </p>
-        </article>
-        <article class="blog-entry">
-          <h3>Blog Entry 2</h3>
-          <p>
-            Recently explored advanced generative modeling for medical imaging.
-            Looking forward to applying them in real-world research.
-          </p>
-        </article>
-      </section>
-    </div>
+      <!-- Bio Side -->
+      <div class="bio-content">
+        <h1 style="margin-bottom: 1.5rem; font-size: 2.5rem;">Hi, I'm <span style="color: var(--accent);">Neil</span>.
+        </h1>
+        <p style="font-size: 1.1rem; line-height: 1.8;">
+          I'm an <strong>MSc Data Science</strong> student at <strong>ETH Zürich</strong> and a Research Intern in the
+          <strong>PRS Lab</strong> under the supervision of <strong>Konrad Schindler</strong>, where I work on Point
+          Cloud encoders and knowledge distillation.
+        </p>
+        <p style="font-size: 1.1rem; line-height: 1.8;">
+          I hold a BSc in Artificial Intelligence from the <strong>Universitat Autònoma de Barcelona</strong>, and I
+          spent my final year at the <strong>Technical University of Munich</strong> as a student researcher in the
+          Computer Vision Group, under the supervision of <strong>Daniel Cremers</strong>.
+        </p>
+        <p style="font-size: 1.1rem; line-height: 1.8;">
+          I build and study machine learning and computer vision systems from a research perspective. I am also the
+          creator and host of <strong>Pi5</strong>, a podcast that explains mathematics clearly in just 5 minutes.
+        </p>
 
-    <footer>
-      <ul class="profiles">
-        <li><a href="https://github.com/Neilus03" target="_blank">GitHub</a></li>
-        <li><a href="https://www.linkedin.com/in/neil-de-la-fuente/" target="_blank">LinkedIn</a></li>
-        <li><a href="https://scholar.google.com/citations?user=neilus03" target="_blank">Google Scholar</a></li>
-        <li><a href="https://x.com/Neiluss_" target="_blank">X</a></li>
-        <li><a href="https://open.spotify.com/show/2l4WY2uXutcGQFIzcZNuvC?si=4e610607c52448bc" target="_blank">Pi5 Podcast</a></li>
-      </ul>
-    </footer>
-  </div>
+        <p
+          style="margin-top: 2rem; padding: 1rem; background: var(--accent-dim); border-radius: var(--radius); border-left: 4px solid var(--accent); font-size: 0.95rem;">
+          I am also a <strong>Rafael del Pino Excellence Fellow</strong>.
+        </p>
+
+        <!-- Social Icons Row -->
+        <div class="social-icons">
+          <!-- GitHub -->
+          <a href="https://github.com/Neilus03" target="_blank" aria-label="GitHub">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.416-4.041-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.744.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
+          </a>
+          <!-- LinkedIn -->
+          <a href="https://www.linkedin.com/in/neil-de-la-fuente/" target="_blank" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.238 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+            </svg>
+          </a>
+          <!-- Scholar -->
+          <a href="https://scholar.google.com/citations?user=neilus03" target="_blank" aria-label="Google Scholar">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM3.89 12.6L12 17.02l8.11-4.42C20.11 12.6 20.11 12.6 3.89 12.6z" />
+            </svg>
+          </a>
+          <!-- X -->
+          <a href="https://x.com/Neiluss_" target="_blank" aria-label="X">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="bio-side">
+        <div style="margin-bottom: 1.5rem; display: flex; justify-content: center;">
+          <img src="figs/neil.jpg" alt="Neil" class="profile-img-bubble">
+        </div>
+
+        <h3 class="news-title">News</h3>
+        <div class="news-container">
+          <div class="news-item">
+            <span class="news-date">Jan 2026</span>
+            <span class="news-text">Join the <strong>PRS Lab</strong> as a Research Intern under Konrad
+              Schindler.</span>
+          </div>
+          <div class="news-item">
+            <span class="news-date">Sep 2025</span>
+            <span class="news-text">Started MSc Data Science at <strong>ETH Zürich</strong>.</span>
+          </div>
+
+          <div class="news-item">
+            <span class="news-date">Aug 2025</span>
+            <span class="news-text">Awarded the <strong>Rafael del Pino Excellence Fellowship</strong>.</span>
+          </div>
+          <div class="news-item">
+            <span class="news-date">Jul 2025</span>
+            <span class="news-text">Completed my BSc thesis at <strong>TUM Vision Group</strong> under Daniel
+              Cremers.</span>
+          </div>
+          <div class="news-item">
+            <span class="news-date">May 2025</span>
+            <span class="news-text">Paper on <strong>Hypernetworks</strong> accepted to CVPR LatinX.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Research Focus</h2>
+      <p class="focus-description">My current work centers on the intersection of geometry and
+        learning, specifically in the 3D/4D domain.</p>
+      <div class="tag-list">
+        <span class="tag">3D Asset Generation</span>
+        <span class="tag">3D Foundation Models</span>
+        <span class="tag">3D Geometry & Deep Learning</span>
+        <span class="tag">Point Cloud Processing</span>
+        <span class="tag">Implicit Representations</span>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="container site-footer">
+    <p>© 2026 Neil De La Fuente. ETH Zürich | Swiss Federal Institute of Technology.</p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
+
 </html>
