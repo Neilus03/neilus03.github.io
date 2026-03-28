@@ -53,6 +53,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: var(--nav-h);
   background: var(--bg);
   transition: background 0.3s ease;
 }
@@ -63,7 +64,15 @@ body {
   font-family: var(--font-sans);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  padding-top: var(--nav-h);
+}
+
+section {
+  padding: 6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+section:last-of-type {
+  border-bottom: none;
 }
 
 a {
@@ -154,6 +163,12 @@ ul {
   margin: 0 auto;
   padding: 0 2rem;
 }
+
+/* ─── Highlights ────────────────────────────────────────── */
+.txt-eth { color: #00529b; font-weight: 600; }
+.txt-tum { color: #0065bd; font-weight: 600; }
+.txt-uab { color: #00732f; font-weight: 600; }
+.txt-highlight { color: var(--accent); font-weight: 700; }
 
 section {
   padding: 5rem 0;
@@ -369,6 +384,8 @@ p {
 
 .iframe-display {
   display: block;
+  width: 100%;
+  border: none;
 }
 
 @media (max-width: 850px) {

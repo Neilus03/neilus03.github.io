@@ -43,15 +43,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ─── Active Link Helper ─────────────────────────────────
-  // Ensures nav links reflect the current page even if hardcoded classes are missed
-  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.nav-links a').forEach(link => {
-    if (link.getAttribute('href') === currentPath) {
-      link.classList.add('active');
-    } else {
-      link.classList.remove('active');
-    }
-  });
+  // ─── Active Link Highlighting (Intersection Observer) ───
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const sections = document.querySelectorAll('section');
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-50% 0px -50% 0px', // Trigger when section is in middle of viewport
+    threshold: 0
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+        });
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach(section => observer.observe(section));
 
 });

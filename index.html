@@ -14,13 +14,13 @@
   <!-- ─── Navigation ─────────────────────────────────── -->
   <nav class="site-nav">
     <div class="nav-inner">
-      <a href="index.html" class="nav-brand">Neil De La Fuente</a>
+      <a href="#about" class="nav-brand">Neil De La Fuente</a>
       <div class="nav-links">
-        <a href="index.html" class="active">About</a>
-        <a href="publications.html">Research</a>
-        <a href="blog.html">Blog</a>
-        <a href="podcast.html">Podcast</a>
-        <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">
+        <a href="#about">About</a>
+        <a href="#research">Research</a>
+        <a href="#blog">Blog</a>
+        <a href="#podcast">Podcast</a>
+        <button id="themeToggle" type="button" class="theme-toggle" aria-label="Toggle Theme">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="5"></circle>
@@ -38,58 +38,57 @@
     </div>
   </nav>
 
-  <!-- ─── Hero Section ──────────────────────────────── -->
+  <!-- ─── Main Content ──────────────────────────────── -->
   <main class="container">
-    <section class="bio-grid">
-
-      <!-- Bio Side -->
+    <!-- About Section -->
+    <section id="about" class="bio-grid">
       <div class="bio-content">
         <h1 style="margin-bottom: 1.5rem; font-size: 2.5rem;">Hi, I'm <span style="color: var(--accent);">Neil</span>.
         </h1>
         <p style="font-size: 1.1rem; line-height: 1.8;">
-          I'm an <strong>MSc Data Science</strong> student at <strong>ETH Zürich</strong> and a Research Intern in the
-          <strong>PRS Lab</strong> under the supervision of <strong>Konrad Schindler</strong>, where I work on Point
+          I'm an <span class="txt-highlight">MSc Data Science</span> student at <span class="txt-eth">ETH Zürich</span>
+          and a Research Intern in the
+          <span class="txt-highlight">PRS Lab</span> under the supervision of <span class="txt-highlight">Konrad
+            Schindler</span>, where I work on Point
           Cloud encoders and knowledge distillation.
         </p>
         <p style="font-size: 1.1rem; line-height: 1.8;">
-          I hold a BSc in Artificial Intelligence from the <strong>Universitat Autònoma de Barcelona</strong>, and I
-          spent my final year at the <strong>Technical University of Munich</strong> as a student researcher in the
-          Computer Vision Group, under the supervision of <strong>Daniel Cremers</strong>.
+          I hold a BSc in Artificial Intelligence from the <span class="txt-uab">Universitat Autònoma de
+            Barcelona</span>, and I
+          spent my final year at the <span class="txt-tum">Technical University of Munich</span> as a student researcher
+          in the
+          Computer Vision Group, under the supervision of <span class="txt-highlight">Daniel Cremers</span>.
         </p>
         <p style="font-size: 1.1rem; line-height: 1.8;">
-          I build and study machine learning and computer vision systems from a research perspective. I am also the
-          creator and host of <strong>Pi5</strong>, a podcast that explains mathematics clearly in just 5 minutes.
+          I build and study machine learning and computer vision systems from a research perspective, with a current
+          focus on <span class="txt-highlight">3D asset generation</span>, <span class="txt-highlight">3D foundation
+            models</span>, and the <span class="txt-highlight">geometry</span> of deep representations.
         </p>
 
-        <p
+        <p class="focus-description"
           style="margin-top: 2rem; padding: 1rem; background: var(--accent-dim); border-radius: var(--radius); border-left: 4px solid var(--accent); font-size: 0.95rem;">
-          I am also a <strong>Rafael del Pino Excellence Fellow</strong>.
+          I am also a <span class="txt-highlight">Rafael del Pino Excellence Fellow</span>.
         </p>
 
-        <!-- Social Icons Row -->
         <div class="social-icons">
-          <!-- GitHub -->
           <a href="https://github.com/Neilus03" target="_blank" aria-label="GitHub">
             <svg viewBox="0 0 24 24">
               <path
                 d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.416-4.041-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.744.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
             </svg>
           </a>
-          <!-- LinkedIn -->
           <a href="https://www.linkedin.com/in/neil-de-la-fuente/" target="_blank" aria-label="LinkedIn">
             <svg viewBox="0 0 24 24">
               <path
                 d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.238 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
             </svg>
           </a>
-          <!-- Scholar -->
           <a href="https://scholar.google.com/citations?user=neilus03" target="_blank" aria-label="Google Scholar">
             <svg viewBox="0 0 24 24">
               <path
                 d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM3.89 12.6L12 17.02l8.11-4.42C20.11 12.6 20.11 12.6 3.89 12.6z" />
             </svg>
           </a>
-          <!-- X -->
           <a href="https://x.com/Neiluss_" target="_blank" aria-label="X">
             <svg viewBox="0 0 24 24">
               <path
@@ -100,22 +99,20 @@
       </div>
 
       <div class="bio-side">
-        <div style="margin-bottom: 1.5rem; display: flex; justify-content: center;">
+        <div style="margin-bottom: 2rem; display: flex; justify-content: center;">
           <img src="figs/neil.jpg" alt="Neil" class="profile-img-bubble">
         </div>
-
         <h3 class="news-title">News</h3>
         <div class="news-container">
-          <div class="news-item">
-            <span class="news-date">Jan 2026</span>
-            <span class="news-text">Join the <strong>PRS Lab</strong> as a Research Intern under Konrad
-              Schindler.</span>
-          </div>
           <div class="news-item">
             <span class="news-date">Sep 2025</span>
             <span class="news-text">Started MSc Data Science at <strong>ETH Zürich</strong>.</span>
           </div>
-
+          <div class="news-item">
+            <span class="news-date">Sep 2025</span>
+            <span class="news-text">Joined the <strong>PRS Lab</strong> as a Research Intern under Konrad
+              Schindler.</span>
+          </div>
           <div class="news-item">
             <span class="news-date">Aug 2025</span>
             <span class="news-text">Awarded the <strong>Rafael del Pino Excellence Fellowship</strong>.</span>
@@ -127,22 +124,179 @@
           </div>
           <div class="news-item">
             <span class="news-date">May 2025</span>
-            <span class="news-text">Paper on <strong>Hypernetworks</strong> accepted to CVPR LatinX.</span>
+            <span class="news-text">Paper on <strong>Hypernetworks</strong> accepted to CVPR LatinX in CV.</span>
           </div>
         </div>
       </div>
     </section>
 
-    <section>
-      <h2 class="section-title">Research Focus</h2>
-      <p class="focus-description">My current work centers on the intersection of geometry and
-        learning, specifically in the 3D/4D domain.</p>
-      <div class="tag-list">
-        <span class="tag">3D Asset Generation</span>
-        <span class="tag">3D Foundation Models</span>
-        <span class="tag">3D Geometry & Deep Learning</span>
-        <span class="tag">Point Cloud Processing</span>
-        <span class="tag">Implicit Representations</span>
+    <!-- Research Section -->
+    <section id="research">
+      <h2 class="section-title">Research</h2>
+      <p class="focus-description">My work focuses on deep learning, computer vision, and geometric representations.</p>
+      <div class="pub-list">
+        <!-- 2026 -->
+        <article class="pub-item">
+          <img src="figs/pah.png" alt="3D-to-4D" class="pub-img"> <!-- Placeholder img if specific one missing -->
+          <div class="pub-content">
+            <h3 class="pub-title">3D-to-4D Gaussian Scene Generation with Text-guided Diffusion</h3>
+            <p class="pub-venue">arXiv Pre-Print 2026</p>
+            <p class="pub-summary">Proposing a framework for generating temporally consistent 4D scenes from text
+              prompts using Gaussian Splatting and latent diffusion.</p>
+            <div class="pub-links">
+              <a href="#" class="btn-minimal">Paper Soon ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pub-item">
+          <img src="figs/medical_vae.png" alt="Benchmark" class="pub-img">
+          <div class="pub-content">
+            <h3 class="pub-title">A complete benchmark for polyp detection, segmentation and classification in
+              colonoscopy images</h3>
+            <p class="pub-venue">Frontiers in Oncology 2026</p>
+            <p class="pub-summary">Developing a unified framework for gastrointestinal vision tasks to improve
+              diagnostic consistency across datasets.</p>
+            <div class="pub-links">
+              <a href="#" class="btn-minimal">Article ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2025 -->
+        <article class="pub-item">
+          <img src="figs/pah.png" alt="PAH" class="pub-img">
+          <div class="pub-content">
+            <h3 class="pub-title">Prototype Augmented Hypernetworks</h3>
+            <p class="pub-venue">CVPR 2025 (LatinX in CV)</p>
+            <p class="pub-summary">Investigating hypernetwork architectures for few-shot learning and model adaptation
+              in low-data regimes.</p>
+            <div class="pub-links">
+              <a href="https://www.arxiv.org/pdf/2505.07450" target="_blank" class="btn-minimal">Paper ↗</a>
+              <a href="#" class="btn-minimal">Project ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pub-item">
+          <img src="figs/guidex.png" alt="GUIDEX" class="pub-img">
+          <div class="pub-content">
+            <h3 class="pub-title">GUIDEX: Guided Data Generation for Zero-Shot IE</h3>
+            <p class="pub-venue">ACL 2025 (Findings)</p>
+            <p class="pub-summary">Synthetic data generation strategies to improve zero-shot information extraction in
+              specialized domains.</p>
+            <div class="pub-links">
+              <a href="#" class="btn-minimal">Paper ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pub-item">
+          <img src="figs/breakout.png" alt="Design Patterns" class="pub-img">
+          <div class="pub-content">
+            <h3 class="pub-title">Neural Network Design Patterns in Computer Vision</h3>
+            <p class="pub-venue">Seminar Report 2025</p>
+            <p class="pub-summary">A survey of architectural patterns that have defined modern computer vision
+              breakthroughs.</p>
+            <div class="pub-links">
+              <a href="#" class="btn-minimal">Report ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2024 -->
+        <article class="pub-item">
+          <img src="figs/breakout.png" alt="RL Study" class="pub-img">
+          <div class="pub-content">
+            <h3 class="pub-title">Deep RL in Visual Environments: A Comparative Study</h3>
+            <p class="pub-venue">KDD 2024</p>
+            <p class="pub-summary">Evaluating the stability and sample efficiency of DQN vs PPO across diverse Atari
+              benchmarks.</p>
+            <div class="pub-links">
+              <a href="https://arxiv.org/abs/2407.14151" target="_blank" class="btn-minimal">ArXiv ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pub-item">
+          <img src="figs/medical_vae.png" alt="MICCAI" class="pub-img">
+          <div class="pub-content">
+            <h3 class="pub-title">Enhancing Image Classification in Small &amp; Unbalanced Datasets</h3>
+            <p class="pub-venue">MICCAI 2024</p>
+            <p class="pub-summary">Leveraging synthetic data and generative models to mitigate label imbalance in
+              medical imaging datasets.</p>
+            <div class="pub-links">
+              <a href="https://arxiv.org/abs/2409.10286" target="_blank" class="btn-minimal">ArXiv ↗</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="pub-item">
+          <img src="figs/multiagent.gif" alt="Game Theory" class="pub-img">
+          <div class="pub-content">
+            <h3 class="pub-title">Game Theory & Multi-Agent Reinforcement Learning: A Survey</h3>
+            <p class="pub-venue">arXiv Pre-Print 2024</p>
+            <p class="pub-summary">A comprehensive review of the mathematical roots of MARL and its modern applications
+              in cooperative agents.</p>
+            <div class="pub-links">
+              <a href="https://arxiv.org/abs/2412.20523" target="_blank" class="btn-minimal">ArXiv ↗</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="list-header">
+      <h2 class="section-title">Blog</h2>
+      <p class="focus-description">Short-form notes on 3D, deep learning, and representation learning.</p>
+      <div class="item-list">
+        <article class="post-item">
+          <p class="item-meta">March 2026 &nbsp;·&nbsp; Deep Learning</p>
+          <h2 class="item-title"><a href="https://neilus03.github.io/losingtickets/" class="hover-underline">Losing
+              Tickets in Neural Representations</a></h2>
+          <p class="item-summary">Applying the Lottery Ticket Hypothesis to SIRENs. Exploring frequency carrier
+            destruction and how high-magnitude weights act as the primary oscillators of Fourier decomposition.</p>
+          <div class="item-footer">
+            <a href="https://neilus03.github.io/losingtickets/" class="btn-minimal">Read Full Article →</a>
+          </div>
+        </article>
+
+        <article class="post-item upcoming">
+          <p class="item-meta">Coming Soon &nbsp;·&nbsp; 3D Foundations</p>
+          <h2 class="item-title">Temporal Coherence in Dynamic Gaussians</h2>
+          <p class="item-summary">Reflecting on recent experiments at ETH Zürich regarding motion-aware priors for 4D
+            reconstruction.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Podcast Section -->
+    <section id="podcast">
+      <div class="podcast-hero">
+        <div class="podcast-logo-wrap">
+          <img src="figs/pi5_logo.jpg" alt="Pi5 Podcast Logo">
+        </div>
+        <div>
+          <h1 class="section-title">Pi5 Podcast</h1>
+          <p class="podcast-description">
+            Pi5 is an introductory and fun podcast that explains mathematics clearly in just 5 minutes. It's designed
+            for everyone to enjoy, from total beginners to curiosity-driven learners. No dense jargon. Just interesting
+            ideas explained simply.
+          </p>
+          <a href="https://open.spotify.com/show/2l4WY2uXutcGQFIzcZNuvC" target="_blank" class="btn-minimal">Listen on
+            Spotify ↗</a>
+        </div>
+      </div>
+
+      <div class="episode-section">
+        <h3 class="episode-label">Featured Episode</h3>
+        <div class="episode-embed">
+          <iframe title="Pi5 Podcast Spotify Player" class="iframe-display"
+            src="https://open.spotify.com/embed/episode/5Anlo1Uabzgaje87OihwRw?utm_source=generator&amp;theme=0"
+            height="352" allowfullscreen=""
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
       </div>
     </section>
 
