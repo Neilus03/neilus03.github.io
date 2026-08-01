@@ -66,4 +66,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   sections.forEach(section => observer.observe(section));
 
+  // ─── Pi5 Explains: Gaussian cloud interaction ──────────
+  const splatStage = document.querySelector('.splat-stage');
+  const splatButton = document.querySelector('.splat-button');
+
+  if (splatStage) {
+    splatStage.addEventListener('pointermove', (event) => {
+      const bounds = splatStage.getBoundingClientRect();
+      const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 24;
+      const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * 24;
+      splatStage.style.setProperty('--pointer-x', `${x}px`);
+      splatStage.style.setProperty('--pointer-y', `${y}px`);
+    });
+
+    splatStage.addEventListener('pointerleave', () => {
+      splatStage.style.setProperty('--pointer-x', '0px');
+      splatStage.style.setProperty('--pointer-y', '0px');
+    });
+  }
+
+  if (splatButton && splatStage) {
+    splatButton.addEventListener('click', () => {
+      const shuffled = splatStage.classList.toggle('is-shuffled');
+      splatButton.setAttribute('aria-pressed', String(shuffled));
+      splatButton.textContent = shuffled ? 'Reassemble the cloud' : 'Shuffle the cloud';
+    });
+  }
+
 });
