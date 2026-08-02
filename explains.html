@@ -33,14 +33,22 @@
           </svg>
         </button>
       </div>
+      <button class="mobile-menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">
+        <span></span><span></span>
+      </button>
     </div>
   </nav>
 
+  <div class="explain-progress" aria-hidden="true">
+    <span id="explainProgressFill"></span>
+  </div>
+
   <main class="container explainer-page">
     <header class="explainer-header">
-      <p class="explainer-kicker">π5 EXPLAINS · 01</p>
-      <h1>Gaussian splatting,<br><span>in five minutes.</span></h1>
-      <p class="explainer-lead">A scene is not stored as a pile of pixels. It is a cloud of soft, coloured 3D ellipses that blend into an image.</p>
+      <p class="explainer-kicker">π5 EXPLAINS · 5 MIN · 3 INTERACTIONS</p>
+      <h1><span class="title-ink"><span class="title-word">Gaussian</span> <span class="title-word">splatting,</span></span><br><span class="title-accent"><span class="title-word">in five</span> <span class="title-word">minutes.</span></span></h1>
+      <p class="explainer-lead">How can a computer rebuild a place from photographs—and then show it from a camera position that never existed? The answer is a cloud of soft, coloured 3D ellipsoids.</p>
+      <p class="explainer-promise">Scroll, drag, and experiment. By the end you will understand what a Gaussian stores, how a view is rendered, and how the cloud learns from images.</p>
     </header>
 
     <section class="splat-stage" aria-label="Animated illustration of coloured Gaussian splats" tabindex="0">
@@ -63,12 +71,61 @@
       </div>
     </section>
 
-    <section class="explainer-lesson" aria-labelledby="one-gaussian-title">
+    <nav class="chapter-map" aria-label="Explainer chapters">
+      <a href="#the-problem"><span>0:00</span>The problem</a>
+      <a href="#one-gaussian"><span>0:55</span>One Gaussian</a>
+      <a href="#rendering"><span>2:05</span>Rendering</a>
+      <a href="#training"><span>3:30</span>Training</a>
+      <a href="#tradeoffs"><span>4:30</span>Trade-offs</a>
+    </nav>
+
+    <section id="the-problem" class="explainer-lesson" aria-labelledby="problem-title" data-progress-label="The problem">
+      <div class="lesson-heading lesson-heading-wide">
+        <p class="explainer-kicker">00:00 · THE PROBLEM</p>
+        <div>
+          <h2 id="problem-title">Photos show rays.<br>We need a world.</h2>
+          <p>A photograph tells us the colour that arrived along each camera ray, but not exactly where that colour came from in 3D. One image cannot tell whether a red patch is a nearby leaf or a distant wall. Several overlapping views provide the missing clues: objects shift by different amounts as the camera moves.</p>
+          <p>Novel-view synthesis turns those photographs into a representation that can answer a new question: <strong>“What would this scene look like from here?”</strong> Gaussian splatting answers by reconstructing millions of small 3D volumes, then projecting them into any requested camera.</p>
+        </div>
+      </div>
+
+      <div class="novel-view-flow" aria-label="Photographs from known cameras become a Gaussian scene that can be rendered from a new camera">
+        <div class="flow-stage">
+          <span class="flow-label">KNOWN PHOTOS</span>
+          <div class="photo-stack" aria-hidden="true">
+            <div class="mini-photo mini-photo-left"><i></i><i></i><i></i></div>
+            <div class="mini-photo mini-photo-centre"><i></i><i></i><i></i></div>
+            <div class="mini-photo mini-photo-right"><i></i><i></i><i></i></div>
+          </div>
+          <p>Different views expose parallax and occlusion.</p>
+        </div>
+        <span class="flow-arrow" aria-hidden="true">→</span>
+        <div class="flow-stage flow-cloud-stage">
+          <span class="flow-label">LEARNED 3D CLOUD</span>
+          <div class="flow-cloud" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <p>Geometry and appearance live together.</p>
+        </div>
+        <span class="flow-arrow" aria-hidden="true">→</span>
+        <div class="flow-stage">
+          <span class="flow-label">NEW CAMERA</span>
+          <div class="new-camera-view" aria-hidden="true">
+            <div class="camera-cone"></div>
+            <div class="mini-photo"><i></i><i></i><i></i></div>
+          </div>
+          <p>Render a view that was never photographed.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="one-gaussian" class="explainer-lesson" aria-labelledby="one-gaussian-title" data-progress-label="One Gaussian">
       <div class="lesson-heading">
-        <p class="explainer-kicker">01 · ONE GAUSSIAN</p>
+        <p class="explainer-kicker">00:55 · ONE GAUSSIAN</p>
         <div>
           <h2 id="one-gaussian-title">A soft 3D ellipsoid<br>becomes a 2D ellipse.</h2>
-          <p>Each point in the cloud is a tiny, fuzzy volume. Its centre is <strong>μ</strong>; its shape and direction are its <strong>covariance Σ</strong>. From a camera, that volume lands on the screen as an ellipse.</p>
+          <p>An ordinary point has a position but no size, so it can leave holes when projected. A Gaussian is different: it is a tiny, fuzzy volume that occupies space. Its centre is <strong>μ</strong>; its scale, stretch, and direction are encoded by a <strong>covariance matrix Σ</strong>.</p>
+          <p>Think of Σ as instructions for turning a sphere into a rotated rugby ball. From a camera, that 3D ellipsoid projects to a 2D elliptical footprint—a <em>splat</em>. Its edges fade smoothly instead of ending abruptly, which lets neighbouring splats blend without seams.</p>
         </div>
       </div>
 
@@ -103,14 +160,21 @@
           <p class="controls-note"><strong>Important:</strong> a Gaussian is not a coloured disc pasted on an image. It has a 3D position, 3D extent, orientation, colour, and opacity. This ellipse is its camera-facing footprint.</p>
         </div>
       </div>
+
+      <div class="concept-note">
+        <span class="concept-note-mark">μ, Σ</span>
+        <p><strong>A single Gaussian stores more than geometry.</strong> It also carries opacity and view-dependent colour. Position says where it lives; covariance says what region it covers; opacity says how strongly it blocks what is behind it; colour says what light it contributes.</p>
+        <code>Gaussian = position + shape + opacity + colour</code>
+      </div>
     </section>
 
-    <section class="explainer-lesson" aria-labelledby="scene-title">
+    <section id="rendering" class="explainer-lesson" aria-labelledby="scene-title" data-progress-label="Rendering">
       <div class="lesson-heading lesson-heading-wide">
-        <p class="explainer-kicker">02 · MANY GAUSSIANS</p>
+        <p class="explainer-kicker">02:05 · RENDERING A VIEW</p>
         <div>
           <h2 id="scene-title">Move the camera.<br>The cloud makes a new view.</h2>
-          <p>The same 3D Gaussians are projected from a new viewpoint, ordered from back to front, and alpha-blended. Nothing is hallucinated per pixel: it is fast rasterisation of learned geometry.</p>
+          <p>When the camera moves, the Gaussians do not. Their fixed 3D centres are simply projected through the new camera. Nearby Gaussians shift more than distant ones, producing the parallax that makes the result feel three-dimensional.</p>
+          <p>Each projected ellipse covers several pixels. For every affected pixel, the renderer sorts contributors by depth and blends them from front to back. A strong, opaque splat hides more of what is behind it; a weak one lets more background colour through.</p>
         </div>
       </div>
 
@@ -133,24 +197,109 @@
 
       <ol class="render-recipe">
         <li><span>01</span><p><strong>Project</strong> each 3D ellipsoid through the current camera.</p></li>
-        <li><span>02</span><p><strong>Sort</strong> the 2D footprints by depth, far to near.</p></li>
+        <li><span>02</span><p><strong>Sort</strong> the 2D footprints by camera depth.</p></li>
         <li><span>03</span><p><strong>Blend</strong> their translucent colours into the final image.</p></li>
       </ol>
+
+      <div class="blend-explanation">
+        <div>
+          <span class="explainer-kicker">THE BLENDING RULE</span>
+          <p><strong>Colour accumulates; visibility runs out.</strong> Start with all light available. Each Gaussian contributes its colour multiplied by its opacity and by the visibility left by nearer splats. Then it consumes part of that remaining visibility.</p>
+        </div>
+        <div class="blend-equation" aria-label="Pixel colour equals the sum of remaining visibility times opacity times Gaussian colour">
+          C<sub>pixel</sub> = Σ&nbsp; T<sub>i</sub> · α<sub>i</sub> · c<sub>i</sub>
+          <small>T<sub>i</sub> = light still visible before splat i</small>
+        </div>
+      </div>
     </section>
 
-    <section class="explainer-lesson explainer-last" aria-labelledby="training-title">
+    <section id="training" class="explainer-lesson" aria-labelledby="training-title" data-progress-label="Training">
       <div class="lesson-heading">
-        <p class="explainer-kicker">03 · LEARNING THE CLOUD</p>
+        <p class="explainer-kicker">03:30 · LEARNING THE CLOUD</p>
         <div>
           <h2 id="training-title">Training adjusts the blobs,<br>not the rules of rendering.</h2>
-          <p>Start with a rough cloud. Render it from a known photo position. Compare the render with that photo. Then nudge every Gaussian’s position, shape, colour, and opacity until the views agree.</p>
+          <p>We begin with camera poses and a sparse set of 3D points estimated from matching features across the photos. Each point becomes an initial Gaussian. The first render is rough: splats are misplaced, colours are wrong, and empty regions remain.</p>
+          <p>Training repeatedly picks a known camera, renders the current cloud, and compares that render with the real photograph. The image error sends gradients back into every Gaussian’s position, covariance, opacity, and colour. Large Gaussians may split; useless ones may disappear. Try the simplified optimization loop below.</p>
         </div>
       </div>
 
+      <div class="training-workbench">
+        <div class="training-toolbar">
+          <div>
+            <span>OPTIMIZATION PROGRESS</span>
+            <strong id="trainingStepLabel">Step 0 / 5</strong>
+          </div>
+          <div class="loss-readout">
+            <span>IMAGE LOSS</span>
+            <strong id="trainingLoss">0.842</strong>
+          </div>
+          <div class="training-actions">
+            <button id="trainingStepButton" type="button">Run one step</button>
+            <button id="trainingResetButton" type="button">Reset</button>
+          </div>
+        </div>
+        <canvas id="trainingCanvas" class="lesson-canvas training-canvas" width="1400" height="520" aria-label="Interactive optimization demonstration comparing a target photograph, the current Gaussian render, and their image error."></canvas>
+        <p id="trainingCaption" class="scene-caption"><strong>Initial cloud:</strong> the current splats disagree with the target, so the error panel is bright.</p>
+      </div>
+
+      <ol class="training-loop" aria-label="Gaussian splatting training loop">
+        <li><span>1</span><p><strong>Render</strong> from a camera whose real photo is known.</p></li>
+        <li><span>2</span><p><strong>Compare</strong> the rendered pixels with that photograph.</p></li>
+        <li><span>3</span><p><strong>Update</strong> Gaussian position, shape, opacity, and colour.</p></li>
+        <li><span>4</span><p><strong>Densify</strong> difficult regions by cloning or splitting splats.</p></li>
+      </ol>
+    </section>
+
+    <section id="tradeoffs" class="explainer-lesson" aria-labelledby="tradeoffs-title" data-progress-label="Trade-offs">
+      <div class="lesson-heading lesson-heading-wide">
+        <p class="explainer-kicker">04:30 · WHY IT MATTERS</p>
+        <div>
+          <h2 id="tradeoffs-title">Fast and beautiful.<br>Not magic.</h2>
+          <p>A trained scene is explicit: millions of Gaussian parameters sit in memory, ready to be projected. Rendering avoids asking a neural network to predict every pixel from scratch, so high-resolution novel views can be produced in real time.</p>
+          <p>That speed comes with trade-offs. A large cloud consumes memory. The representation gives appearance rather than a clean surface mesh. Mirrors, transparency, very thin structures, and regions never seen by a training camera remain difficult. Editing individual objects is also less direct than editing conventional geometry.</p>
+        </div>
+      </div>
+
+      <div class="tradeoff-grid">
+        <article class="tradeoff-card tradeoff-good">
+          <span>IT SHINES AT</span>
+          <h3>Real-time novel views</h3>
+          <ul>
+            <li>Fast differentiable rasterisation</li>
+            <li>Sharp, high-frequency appearance</li>
+            <li>Simple explicit primitives</li>
+            <li>Smooth camera motion through captured scenes</li>
+          </ul>
+        </article>
+        <article class="tradeoff-card tradeoff-hard">
+          <span>IT STILL STRUGGLES WITH</span>
+          <h3>Incomplete or changing worlds</h3>
+          <ul>
+            <li>Unseen geometry and extreme extrapolation</li>
+            <li>Reflections, transparency, and thin surfaces</li>
+            <li>Large memory footprints</li>
+            <li>Relighting and object-level editing</li>
+          </ul>
+        </article>
+      </div>
+
+      <aside class="final-recap">
+        <p class="explainer-kicker">05:00 · THE MENTAL MODEL</p>
+        <h2>Photos supervise a cloud.<br>A camera projects it.<br>Transparency builds the image.</h2>
+        <div class="recap-row">
+          <p><strong>Represent</strong><span>Soft 3D ellipsoids carry geometry and appearance.</span></p>
+          <p><strong>Render</strong><span>Project, sort, then alpha-blend their 2D footprints.</span></p>
+          <p><strong>Learn</strong><span>Adjust the cloud until rendered views match the photos.</span></p>
+        </div>
+        <div class="recap-actions">
+          <a class="splat-button" href="#the-problem">Revisit from the top ↑</a>
+          <a class="splat-button splat-button-solid" href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/" target="_blank" rel="noopener">Read the original paper ↗</a>
+        </div>
+      </aside>
+
       <aside class="explainer-takeaway">
         <span class="takeaway-mark">∴</span>
-        <p><strong>Why it matters:</strong> after training, a new view only needs projection, depth sorting, and alpha blending. That is why Gaussian splatting can be both geometric and real-time.</p>
-        <a class="splat-button" href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/" target="_blank" rel="noopener">Original paper ↗</a>
+        <p><strong>One-sentence answer:</strong> Gaussian splatting reconstructs a scene as learnable translucent 3D ellipsoids, then creates new views by projecting and blending them.</p>
       </aside>
     </section>
   </main>
