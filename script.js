@@ -586,6 +586,702 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggle.addEventListener('click', () => requestAnimationFrame(drawTrainingLesson));
   }
 
+  // ─── Pi5 Explains: instance segmentation lessons ──────
+  const segTaskCanvas = document.getElementById('segTaskCanvas');
+  const awarenessCanvas = document.getElementById('awarenessCanvas');
+  const methodCanvas = document.getElementById('methodCanvas');
+
+  const readSegColours = () => {
+    const rootStyles = getComputedStyle(document.documentElement);
+    const pageStyles = document.querySelector('.segmentation-page')
+      ? getComputedStyle(document.querySelector('.segmentation-page'))
+      : rootStyles;
+    return {
+      ...readThemeColours(),
+      violet: pageStyles.getPropertyValue('--seg-violet').trim() || '#7064f6',
+      coral: pageStyles.getPropertyValue('--seg-coral').trim() || '#ff5f78',
+      mint: pageStyles.getPropertyValue('--seg-mint').trim() || '#18b98f',
+      yellow: pageStyles.getPropertyValue('--seg-yellow').trim() || '#e4a917',
+      dark: document.documentElement.getAttribute('data-theme') === 'dark'
+    };
+  };
+
+  const roundedRect = (context, x, y, width, height, radius) => {
+    const safeRadius = Math.min(radius, width / 2, height / 2);
+    context.beginPath();
+    context.moveTo(x + safeRadius, y);
+    context.arcTo(x + width, y, x + width, y + height, safeRadius);
+    context.arcTo(x + width, y + height, x, y + height, safeRadius);
+    context.arcTo(x, y + height, x, y, safeRadius);
+    context.arcTo(x, y, x + width, y, safeRadius);
+    context.closePath();
+  };
+
+  const drawCanvasTag = (context, text, x, y, colour, options = {}) => {
+    const { align = 'left', darkText = false } = options;
+    context.save();
+    context.font = '600 12px JetBrains Mono, monospace';
+    const width = context.measureText(text).width + 20;
+    const left = align === 'right' ? x - width : x;
+    roundedRect(context, left, y - 19, width, 25, 5);
+    context.fillStyle = colour;
+    context.fill();
+    context.fillStyle = darkText ? '#141414' : '#ffffff';
+    context.fillText(text, left + 10, y - 2);
+    context.restore();
+  };
+
+  const carPath = (context, object) => {
+    const { x, y, scale = 1 } = object;
+    context.beginPath();
+    context.moveTo(x, y + 43 * scale);
+    context.lineTo(x + 18 * scale, y + 17 * scale);
+    context.quadraticCurveTo(x + 25 * scale, y + 8 * scale, x + 43 * scale, y + 8 * scale);
+    context.lineTo(x + 95 * scale, y + 8 * scale);
+    context.quadraticCurveTo(x + 112 * scale, y + 10 * scale, x + 126 * scale, y + 31 * scale);
+    context.lineTo(x + 153 * scale, y + 37 * scale);
+    context.quadraticCurveTo(x + 162 * scale, y + 40 * scale, x + 162 * scale, y + 52 * scale);
+    context.lineTo(x + 162 * scale, y + 66 * scale);
+    context.lineTo(x, y + 66 * scale);
+    context.closePath();
+    context.moveTo(x + 35 * scale, y + 66 * scale);
+    context.arc(x + 35 * scale, y + 66 * scale, 15 * scale, 0, Math.PI * 2);
+    context.moveTo(x + 129 * scale, y + 66 * scale);
+    context.arc(x + 129 * scale, y + 66 * scale, 15 * scale, 0, Math.PI * 2);
+  };
+
+  const personPath = (context, object) => {
+    const { x, y, scale = 1 } = object;
+    context.beginPath();
+    context.arc(x + 18 * scale, y + 14 * scale, 13 * scale, 0, Math.PI * 2);
+    context.moveTo(x + 8 * scale, y + 31 * scale);
+    context.quadraticCurveTo(x + 18 * scale, y + 24 * scale, x + 29 * scale, y + 31 * scale);
+    context.lineTo(x + 37 * scale, y + 82 * scale);
+    context.lineTo(x + 27 * scale, y + 82 * scale);
+    context.lineTo(x + 24 * scale, y + 128 * scale);
+    context.lineTo(x + 12 * scale, y + 128 * scale);
+    context.lineTo(x + 9 * scale, y + 82 * scale);
+    context.lineTo(x, y + 82 * scale);
+    context.closePath();
+  };
+
+  const dogPath = (context, object) => {
+    const { x, y, scale = 1 } = object;
+    context.beginPath();
+    context.ellipse(x + 43 * scale, y + 33 * scale, 39 * scale, 23 * scale, -0.08, 0, Math.PI * 2);
+    context.moveTo(x + 78 * scale, y + 27 * scale);
+    context.arc(x + 82 * scale, y + 25 * scale, 18 * scale, 0, Math.PI * 2);
+    context.moveTo(x + 82 * scale, y + 40 * scale);
+    context.lineTo(x + 91 * scale, y + 78 * scale);
+    context.lineTo(x + 80 * scale, y + 78 * scale);
+    context.lineTo(x + 69 * scale, y + 46 * scale);
+    context.moveTo(x + 26 * scale, y + 48 * scale);
+    context.lineTo(x + 20 * scale, y + 78 * scale);
+    context.lineTo(x + 9 * scale, y + 78 * scale);
+    context.lineTo(x + 10 * scale, y + 39 * scale);
+    context.moveTo(x + 7 * scale, y + 28 * scale);
+    context.quadraticCurveTo(x - 12 * scale, y + 5 * scale, x - 4 * scale, y - 6 * scale);
+  };
+
+  const robotPath = (context, object) => {
+    const { x, y, scale = 1 } = object;
+    context.beginPath();
+    context.moveTo(x + 10 * scale, y + 22 * scale);
+    context.quadraticCurveTo(x + 12 * scale, y + 7 * scale, x + 27 * scale, y + 7 * scale);
+    context.lineTo(x + 78 * scale, y + 7 * scale);
+    context.quadraticCurveTo(x + 92 * scale, y + 8 * scale, x + 94 * scale, y + 23 * scale);
+    context.lineTo(x + 88 * scale, y + 66 * scale);
+    context.lineTo(x + 16 * scale, y + 66 * scale);
+    context.closePath();
+    context.moveTo(x + 28 * scale, y + 69 * scale);
+    context.arc(x + 28 * scale, y + 69 * scale, 12 * scale, 0, Math.PI * 2);
+    context.moveTo(x + 76 * scale, y + 69 * scale);
+    context.arc(x + 76 * scale, y + 69 * scale, 12 * scale, 0, Math.PI * 2);
+    context.moveTo(x + 52 * scale, y + 7 * scale);
+    context.lineTo(x + 52 * scale, y - 9 * scale);
+    context.arc(x + 52 * scale, y - 13 * scale, 5 * scale, 0, Math.PI * 2);
+  };
+
+  const sceneObjects = [
+    { id: '01', className: 'car', x: 105, y: 331, scale: 1.08, path: carPath },
+    { id: '02', className: 'car', x: 595, y: 345, scale: 0.82, path: carPath },
+    { id: '03', className: 'person', x: 422, y: 258, scale: 0.9, path: personPath },
+    { id: '04', className: 'person', x: 505, y: 288, scale: 0.72, path: personPath },
+    { id: '05', className: 'dog', x: 790, y: 363, scale: 0.72, path: dogPath },
+    { id: '06', className: 'delivery robot', x: 300, y: 370, scale: 0.74, path: robotPath, novel: true }
+  ];
+
+  const maskPalette = ['#ff5f78', '#7064f6', '#18b98f', '#e4a917', '#2d8ce8', '#d85fb3'];
+  const classPalette = { car: '#7064f6', person: '#ff5f78', dog: '#e4a917', 'delivery robot': '#18b98f' };
+
+  const paintSceneObjects = (context, options = {}) => {
+    const { mode = 'image', alpha = 1, includeRobot = true, labels = true } = options;
+    const visibleObjects = sceneObjects.filter((object) => includeRobot || !object.novel);
+    visibleObjects.forEach((object, index) => {
+      const maskColour = mode === 'semantic' ? classPalette[object.className] : maskPalette[index];
+      context.save();
+      object.path(context, object);
+      if (mode === 'image') {
+        const baseColours = { car: '#426a82', person: '#bc674a', dog: '#936d35', 'delivery robot': '#5c6574' };
+        context.fillStyle = baseColours[object.className];
+        context.strokeStyle = '#20252b';
+        context.lineWidth = 2;
+        context.fill();
+        context.stroke();
+      } else {
+        context.globalAlpha = alpha;
+        context.fillStyle = maskColour;
+        context.strokeStyle = '#ffffff';
+        context.lineWidth = 2;
+        context.fill();
+        context.stroke();
+      }
+      context.restore();
+
+      if (mode === 'image') {
+        context.save();
+        if (object.className === 'car') {
+          context.fillStyle = '#a8d2dc';
+          context.fillRect(object.x + 39 * object.scale, object.y + 17 * object.scale, 58 * object.scale, 20 * object.scale);
+        }
+        if (object.className === 'delivery robot') {
+          context.fillStyle = '#bce7ed';
+          roundedRect(context, object.x + 25 * object.scale, object.y + 20 * object.scale, 54 * object.scale, 24 * object.scale, 5 * object.scale);
+          context.fill();
+        }
+        context.restore();
+      }
+
+      if (mode !== 'image' && labels) {
+        const label = mode === 'semantic' ? object.className : `${object.className} ${object.id}`;
+        const labelX = object.x + (object.className === 'person' ? 15 : 4) * object.scale;
+        const labelY = object.y - 2;
+        drawCanvasTag(context, label.toUpperCase(), labelX, labelY, maskColour);
+      }
+    });
+  };
+
+  const drawStreetBase = (context, colours) => {
+    context.fillStyle = colours.dark ? '#202a36' : '#d9edf2';
+    context.fillRect(0, 0, 1000, 250);
+    context.fillStyle = colours.dark ? '#2d3540' : '#c8c3b8';
+    context.fillRect(0, 250, 1000, 78);
+    context.fillStyle = colours.dark ? '#171b22' : '#62666b';
+    context.fillRect(0, 328, 1000, 172);
+
+    const buildings = [
+      { x: 35, y: 70, w: 190, h: 180, c: '#8da1ae' },
+      { x: 245, y: 105, w: 140, h: 145, c: '#b27868' },
+      { x: 635, y: 55, w: 160, h: 195, c: '#7895a1' },
+      { x: 812, y: 90, w: 150, h: 160, c: '#b9976f' }
+    ];
+    buildings.forEach((building) => {
+      context.fillStyle = colours.dark ? '#3c4650' : building.c;
+      context.fillRect(building.x, building.y, building.w, building.h);
+      context.fillStyle = colours.dark ? '#80909b' : '#dce9e7';
+      for (let x = building.x + 22; x < building.x + building.w - 15; x += 45) {
+        for (let y = building.y + 25; y < building.y + building.h - 22; y += 48) {
+          context.fillRect(x, y, 22, 27);
+        }
+      }
+    });
+
+    context.fillStyle = colours.dark ? '#4a5562' : '#f3efe6';
+    context.fillRect(0, 310, 1000, 18);
+    context.strokeStyle = colours.dark ? '#8b8e75' : '#f4df77';
+    context.lineWidth = 5;
+    context.setLineDash([48, 35]);
+    context.beginPath();
+    context.moveTo(0, 448);
+    context.lineTo(1000, 448);
+    context.stroke();
+    context.setLineDash([]);
+
+    context.fillStyle = colours.dark ? '#315b4c' : '#4e8c65';
+    context.beginPath();
+    context.arc(917, 230, 72, 0, Math.PI * 2);
+    context.arc(852, 245, 47, 0, Math.PI * 2);
+    context.fill();
+    context.fillStyle = colours.dark ? '#584938' : '#765943';
+    context.fillRect(890, 244, 20, 78);
+  };
+
+  const withLogicalScene = (canvas, callback) => {
+    const { context, width, height } = prepareCanvas(canvas);
+    const colours = readSegColours();
+    context.clearRect(0, 0, width, height);
+    context.fillStyle = colours.offset;
+    context.fillRect(0, 0, width, height);
+    const scale = Math.min(width / 1000, height / 500);
+    const offsetX = (width - 1000 * scale) / 2;
+    const offsetY = (height - 500 * scale) / 2;
+    context.save();
+    context.translate(offsetX, offsetY);
+    context.scale(scale, scale);
+    callback(context, colours);
+    context.restore();
+  };
+
+  if (segTaskCanvas) {
+    const taskButtons = document.querySelectorAll('[data-seg-task]');
+    const taskCaption = document.getElementById('segTaskCaption');
+    const classStatus = document.getElementById('segClassStatus');
+    const identityStatus = document.getElementById('segIdentityStatus');
+    const coverageStatus = document.getElementById('segCoverageStatus');
+    const taskState = { mode: 'image' };
+    const taskCopy = {
+      image: {
+        caption: '<strong>Image:</strong> humans see objects immediately, but the computer only receives a grid of colour values.',
+        classes: '—', identities: '—', coverage: 'pixels'
+      },
+      semantic: {
+        caption: '<strong>Semantic segmentation:</strong> every car shares violet and every person shares coral. The classes are known, but same-class individuals are not separated.',
+        classes: 'yes', identities: 'no', coverage: 'all pixels'
+      },
+      instance: {
+        caption: '<strong>Instance segmentation:</strong> each countable object gets its own colour and ID. Background “stuff” can remain outside the output.',
+        classes: 'often', identities: 'yes', coverage: 'things'
+      },
+      panoptic: {
+        caption: '<strong>Panoptic segmentation:</strong> stuff such as sky and road receives a class, while every countable thing also keeps a separate identity.',
+        classes: 'yes', identities: 'things', coverage: 'all pixels'
+      }
+    };
+
+    const drawTaskScene = () => withLogicalScene(segTaskCanvas, (context, colours) => {
+      drawStreetBase(context, colours);
+      if (taskState.mode === 'image') {
+        paintSceneObjects(context, { mode: 'image' });
+      } else {
+        context.save();
+        context.globalAlpha = 0.16;
+        paintSceneObjects(context, { mode: 'image' });
+        context.restore();
+
+        if (taskState.mode === 'semantic' || taskState.mode === 'panoptic') {
+          context.save();
+          context.globalAlpha = taskState.mode === 'panoptic' ? 0.4 : 0.58;
+          context.fillStyle = '#4faecc';
+          context.fillRect(0, 0, 1000, 250);
+          context.fillStyle = '#d59a36';
+          context.fillRect(0, 328, 1000, 172);
+          context.fillStyle = '#86929b';
+          context.fillRect(0, 250, 1000, 78);
+          context.restore();
+          drawCanvasTag(context, 'SKY · STUFF', 24, 40, '#3188a8');
+          drawCanvasTag(context, 'ROAD · STUFF', 24, 475, '#af7618');
+        }
+
+        paintSceneObjects(context, {
+          mode: taskState.mode === 'semantic' ? 'semantic' : 'instance',
+          alpha: 0.82,
+          labels: true
+        });
+      }
+
+      context.save();
+      context.fillStyle = colours.text;
+      context.font = '700 17px Syne, sans-serif';
+      context.fillText(taskState.mode === 'image' ? 'INPUT IMAGE' : `${taskState.mode.toUpperCase()} OUTPUT`, 24, 30);
+      context.restore();
+    });
+
+    const syncTaskScene = () => {
+      const copy = taskCopy[taskState.mode];
+      taskCaption.innerHTML = copy.caption;
+      classStatus.textContent = copy.classes;
+      identityStatus.textContent = copy.identities;
+      coverageStatus.textContent = copy.coverage;
+      drawTaskScene();
+    };
+
+    taskButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        taskState.mode = button.dataset.segTask;
+        taskButtons.forEach((candidate) => {
+          const active = candidate === button;
+          candidate.classList.toggle('active', active);
+          candidate.setAttribute('aria-pressed', String(active));
+        });
+        syncTaskScene();
+      });
+    });
+
+    syncTaskScene();
+    window.addEventListener('resize', drawTaskScene);
+    themeToggle.addEventListener('click', () => requestAnimationFrame(drawTaskScene));
+  }
+
+  if (awarenessCanvas) {
+    const awarenessButtons = document.querySelectorAll('[data-awareness-mode]');
+    const awarenessTitle = document.getElementById('awarenessModeTitle');
+    const awarenessCaption = document.getElementById('awarenessCaption');
+    const awarenessSchema = document.getElementById('awarenessSchema');
+    const awarenessNovel = document.getElementById('awarenessNovel');
+    const awarenessSemantics = document.getElementById('awarenessSemantics');
+    const awarenessState = { mode: 'aware' };
+    const awarenessCopy = {
+      aware: {
+        title: 'Closed-set class-aware',
+        caption: '<strong>Known vocabulary:</strong> masks carry labels from a fixed training set. The unfamiliar delivery robot may be missed or forced into the wrong class.',
+        schema: 'mask + class + score', novel: 'may be missed', semantics: 'fixed vocabulary'
+      },
+      agnostic: {
+        title: 'Class-agnostic instances',
+        caption: '<strong>Separate without naming:</strong> every candidate object can receive an identity such as mask 1 or mask 2. A later stage may attach semantics.',
+        schema: 'mask + score', novel: 'mask candidate', semantics: 'none required'
+      },
+      open: {
+        title: 'Open-vocabulary class-aware',
+        caption: '<strong>Flexible names:</strong> a text-conditioned system can use a runtime concept such as “delivery robot.” It is open-vocabulary, but still class-aware because it names the mask.',
+        schema: 'mask + text class', novel: 'queried by name', semantics: 'flexible vocabulary'
+      }
+    };
+
+    const drawAwarenessScene = () => withLogicalScene(awarenessCanvas, (context, colours) => {
+      drawStreetBase(context, colours);
+      context.save();
+      context.globalAlpha = 0.18;
+      paintSceneObjects(context, { mode: 'image' });
+      context.restore();
+
+      const known = sceneObjects.filter((object) => !object.novel);
+      const objects = awarenessState.mode === 'aware' ? known : sceneObjects;
+      objects.forEach((object, index) => {
+        const colour = awarenessState.mode === 'aware'
+          ? classPalette[object.className]
+          : maskPalette[index];
+        context.save();
+        object.path(context, object);
+        context.globalAlpha = 0.82;
+        context.fillStyle = colour;
+        context.strokeStyle = '#ffffff';
+        context.lineWidth = 2;
+        context.fill();
+        context.stroke();
+        context.restore();
+        let label;
+        if (awarenessState.mode === 'agnostic') label = `MASK ${String(index + 1).padStart(2, '0')}`;
+        else label = object.className.toUpperCase();
+        drawCanvasTag(context, label, object.x, object.y - 3, colour);
+      });
+
+      const novel = sceneObjects.find((object) => object.novel);
+      if (awarenessState.mode === 'aware') {
+        context.save();
+        novel.path(context, novel);
+        context.strokeStyle = colours.coral;
+        context.lineWidth = 3;
+        context.setLineDash([9, 7]);
+        context.stroke();
+        context.restore();
+        drawCanvasTag(context, 'UNKNOWN → BACKGROUND?', novel.x - 22, novel.y - 4, colours.coral);
+      }
+
+      if (awarenessState.mode === 'open') {
+        drawCanvasTag(context, 'TEXT: “DELIVERY ROBOT”', 690, 62, colours.mint, { darkText: true });
+        context.save();
+        context.strokeStyle = colours.mint;
+        context.lineWidth = 2;
+        context.beginPath();
+        context.moveTo(797, 67);
+        context.quadraticCurveTo(590, 105, novel.x + 55, novel.y - 16);
+        context.stroke();
+        context.restore();
+      }
+
+      context.fillStyle = colours.text;
+      context.font = '700 17px Syne, sans-serif';
+      context.fillText(awarenessCopy[awarenessState.mode].title.toUpperCase(), 24, 30);
+    });
+
+    const syncAwareness = () => {
+      const copy = awarenessCopy[awarenessState.mode];
+      awarenessTitle.textContent = copy.title;
+      awarenessCaption.innerHTML = copy.caption;
+      awarenessSchema.textContent = copy.schema;
+      awarenessNovel.textContent = copy.novel;
+      awarenessSemantics.textContent = copy.semantics;
+      drawAwarenessScene();
+    };
+
+    awarenessButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        awarenessState.mode = button.dataset.awarenessMode;
+        awarenessButtons.forEach((candidate) => {
+          const active = candidate === button;
+          candidate.classList.toggle('active', active);
+          candidate.setAttribute('aria-pressed', String(active));
+        });
+        syncAwareness();
+      });
+    });
+
+    syncAwareness();
+    window.addEventListener('resize', drawAwarenessScene);
+    themeToggle.addEventListener('click', () => requestAnimationFrame(drawAwarenessScene));
+  }
+
+  if (methodCanvas) {
+    const methodTabs = document.querySelectorAll('[data-method]');
+    const methodEyebrow = document.getElementById('methodEyebrow');
+    const methodTitle = document.getElementById('methodTitle');
+    const methodDescription = document.getElementById('methodDescription');
+    const methodFootnote = document.getElementById('methodFootnote');
+    const methodSteps = [
+      document.getElementById('methodStepOne'),
+      document.getElementById('methodStepTwo'),
+      document.getElementById('methodStepThree')
+    ];
+    const methodState = { method: 'topdown' };
+    const methodCopy = {
+      topdown: {
+        eyebrow: 'DETECT → CROP → MASK',
+        title: 'Top-down: find objects, then trace them.',
+        description: 'A detector proposes a box for each likely object. A mask head predicts foreground pixels inside every proposal. Mask R-CNN is the classic example.',
+        steps: ['image features', 'object boxes', 'masks + labels'],
+        footnote: '<strong>Class relation:</strong> often class-aware, although a shared class-agnostic mask head is also possible.'
+      },
+      bottomup: {
+        eyebrow: 'PIXELS → CUES → GROUPS',
+        title: 'Bottom-up: let pixels vote for their group.',
+        description: 'The network predicts dense cues such as centres, offsets, boundaries, or embeddings. A grouping step joins pixels that point to the same object.',
+        steps: ['pixel features', 'centres / affinity', 'grouped masks'],
+        footnote: '<strong>Class relation:</strong> grouping can be class-agnostic; a semantic head can name the resulting groups.'
+      },
+      query: {
+        eyebrow: 'QUERIES → MATCH → MASK SET',
+        title: 'Query-based: one slot competes for one object.',
+        description: 'A set of learned queries attends to the image. Each useful query predicts a mask and usually a class; unused queries predict “no object.” Mask2Former follows this set-prediction view.',
+        steps: ['learned queries', 'image attention', 'mask set'],
+        footnote: '<strong>Class relation:</strong> the query can output a closed-set class, an open-vocabulary label, or a category-free mask score.'
+      },
+      prompt: {
+        eyebrow: 'PROMPT → REGION → MASK',
+        title: 'Promptable: tell the model where to look.',
+        description: 'A point, box, or prior mask identifies the intended region. The model returns one or more plausible masks, which is useful when “the object” is ambiguous.',
+        steps: ['point / box', 'prompt encoding', 'class-free masks'],
+        footnote: '<strong>Class relation:</strong> Segment Anything predicts masks without names; another model is needed if the application also needs semantics.'
+      }
+    };
+
+    const drawMethodScene = () => {
+      const { context, width, height } = prepareCanvas(methodCanvas);
+      const colours = readSegColours();
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = colours.bg;
+      context.fillRect(0, 0, width, height);
+      drawGrid(context, width, height, colours, Math.max(28, width / 16));
+
+      const scale = Math.min(width / 1000, height / 620);
+      const offsetX = (width - 1000 * scale) / 2;
+      const offsetY = (height - 620 * scale) / 2;
+      context.save();
+      context.translate(offsetX, offsetY);
+      context.scale(scale, scale);
+
+      context.fillStyle = colours.offset;
+      roundedRect(context, 65, 115, 360, 390, 18);
+      context.fill();
+      context.strokeStyle = colours.border;
+      context.lineWidth = 2;
+      context.stroke();
+      context.fillStyle = colours.dim;
+      context.font = '500 12px JetBrains Mono, monospace';
+      context.fillText('IMAGE FEATURES', 88, 146);
+
+      const miniCar = { x: 110, y: 320, scale: 1.25 };
+      const miniPerson = { x: 300, y: 210, scale: 1.2 };
+      context.save();
+      carPath(context, miniCar);
+      context.fillStyle = colours.violet;
+      context.globalAlpha = 0.75;
+      context.fill();
+      context.restore();
+      context.save();
+      personPath(context, miniPerson);
+      context.fillStyle = colours.coral;
+      context.globalAlpha = 0.78;
+      context.fill();
+      context.restore();
+
+      context.strokeStyle = colours.accent;
+      context.fillStyle = colours.accent;
+      context.lineWidth = 2;
+
+      if (methodState.method === 'topdown') {
+        context.save();
+        context.setLineDash([9, 6]);
+        context.strokeRect(96, 318, 217, 112);
+        context.strokeRect(291, 204, 58, 164);
+        context.restore();
+        drawCanvasTag(context, 'BOX 01', 98, 309, colours.violet);
+        drawCanvasTag(context, 'BOX 02', 291, 195, colours.coral);
+        context.beginPath();
+        context.moveTo(450, 310);
+        context.lineTo(560, 310);
+        context.stroke();
+        drawCanvasTag(context, 'MASK HEAD', 476, 295, colours.accent);
+        context.save();
+        context.translate(575, 0);
+        const carCopy = { ...miniCar, x: 40 };
+        const personCopy = { ...miniPerson, x: 245 };
+        carPath(context, carCopy);
+        context.fillStyle = colours.violet;
+        context.fill();
+        personPath(context, personCopy);
+        context.fillStyle = colours.coral;
+        context.fill();
+        context.restore();
+      } else if (methodState.method === 'bottomup') {
+        for (let y = 185; y < 450; y += 20) {
+          for (let x = 95; x < 400; x += 20) {
+            const carZone = x > 105 && x < 315 && y > 315 && y < 435;
+            const personZone = x > 290 && x < 355 && y > 205 && y < 375;
+            context.beginPath();
+            context.arc(x, y, carZone || personZone ? 4.2 : 2.4, 0, Math.PI * 2);
+            context.fillStyle = carZone ? colours.violet : personZone ? colours.coral : colours.border;
+            context.fill();
+          }
+        }
+        [[208, 370, colours.violet], [323, 286, colours.coral]].forEach(([x, y, colour]) => {
+          context.strokeStyle = colour;
+          context.lineWidth = 3;
+          context.beginPath();
+          context.arc(x, y, 17, 0, Math.PI * 2);
+          context.stroke();
+          drawCanvasTag(context, 'CENTRE', x - 36, y - 27, colour);
+        });
+        drawCanvasTag(context, 'GROUP PIXELS BY VOTE', 555, 315, colours.accent);
+        context.beginPath();
+        context.moveTo(430, 330);
+        context.lineTo(545, 330);
+        context.stroke();
+      } else if (methodState.method === 'query') {
+        const queries = [
+          { y: 185, colour: colours.violet, label: 'Q1 → car mask' },
+          { y: 270, colour: colours.coral, label: 'Q2 → person mask' },
+          { y: 355, colour: colours.dim, label: 'Q3 → no object' }
+        ];
+        queries.forEach((query, index) => {
+          drawCanvasTag(context, `Q${index + 1}`, 520, query.y, query.colour);
+          context.strokeStyle = query.colour;
+          context.beginPath();
+          context.moveTo(565, query.y - 7);
+          context.bezierCurveTo(625, query.y - 80, 690, query.y + 65, 760, query.y - 5);
+          context.stroke();
+          context.fillStyle = query.colour;
+          context.font = '600 13px JetBrains Mono, monospace';
+          context.fillText(query.label, 780, query.y - 2);
+        });
+        drawCanvasTag(context, 'SET PREDICTION', 655, 465, colours.accent);
+      } else {
+        context.strokeStyle = colours.yellow;
+        context.lineWidth = 4;
+        context.beginPath();
+        context.moveTo(323, 270);
+        context.lineTo(323, 306);
+        context.moveTo(305, 288);
+        context.lineTo(341, 288);
+        context.stroke();
+        drawCanvasTag(context, 'POINT PROMPT', 270, 190, colours.yellow, { darkText: true });
+        context.beginPath();
+        context.moveTo(324, 205);
+        context.lineTo(324, 266);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(450, 310);
+        context.lineTo(565, 310);
+        context.strokeStyle = colours.accent;
+        context.stroke();
+        context.save();
+        context.translate(575, 0);
+        const promptedPerson = { ...miniPerson, x: 155 };
+        personPath(context, promptedPerson);
+        context.fillStyle = colours.coral;
+        context.globalAlpha = 0.85;
+        context.fill();
+        context.restore();
+        drawCanvasTag(context, 'MASK · NO CLASS NAME', 670, 430, colours.coral);
+      }
+
+      context.restore();
+    };
+
+    const syncMethod = () => {
+      const copy = methodCopy[methodState.method];
+      methodEyebrow.textContent = copy.eyebrow;
+      methodTitle.textContent = copy.title;
+      methodDescription.textContent = copy.description;
+      methodFootnote.innerHTML = copy.footnote;
+      methodSteps.forEach((step, index) => { step.textContent = copy.steps[index]; });
+      drawMethodScene();
+    };
+
+    methodTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        methodState.method = tab.dataset.method;
+        methodTabs.forEach((candidate) => {
+          const active = candidate === tab;
+          candidate.classList.toggle('active', active);
+          candidate.setAttribute('aria-selected', String(active));
+        });
+        syncMethod();
+      });
+    });
+
+    syncMethod();
+    window.addEventListener('resize', drawMethodScene);
+    themeToggle.addEventListener('click', () => requestAnimationFrame(drawMethodScene));
+  }
+
+  const scenarioButtons = document.querySelectorAll('[data-scenario]');
+  if (scenarioButtons.length) {
+    const scenarioRecommendation = document.getElementById('scenarioRecommendation');
+    const scenarioReason = document.getElementById('scenarioReason');
+    const scenarioIdentity = document.getElementById('scenarioIdentity');
+    const scenarioClass = document.getElementById('scenarioClass');
+    const scenarioCoverage = document.getElementById('scenarioCoverage');
+    const scenarios = {
+      traffic: {
+        recommendation: 'Class-aware instance segmentation',
+        reason: 'You need a separate mask for every vehicle and a category such as car, van, or bicycle for the count.',
+        identity: '<b>IDENTITY</b> required', className: '<b>CLASS</b> required', coverage: '<b>ALL PIXELS</b> not required'
+      },
+      click: {
+        recommendation: 'Promptable class-agnostic segmentation',
+        reason: 'The user already indicates the object with a click. You need its boundary, not a predefined semantic taxonomy.',
+        identity: '<b>IDENTITY</b> prompted', className: '<b>CLASS</b> optional', coverage: '<b>ALL PIXELS</b> not required'
+      },
+      scene: {
+        recommendation: 'Panoptic segmentation',
+        reason: 'The road, sky, and buildings need semantic regions, while each person and vehicle must remain a distinct thing.',
+        identity: '<b>IDENTITY</b> for things', className: '<b>CLASS</b> required', coverage: '<b>ALL PIXELS</b> required'
+      },
+      warehouse: {
+        recommendation: 'Class-agnostic instances + classifier',
+        reason: 'First discover and separate product-shaped regions without assuming a stable catalogue. Name or embed each crop in a second stage.',
+        identity: '<b>IDENTITY</b> required', className: '<b>CLASS</b> later', coverage: '<b>ALL PIXELS</b> not required'
+      }
+    };
+
+    scenarioButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const scenario = scenarios[button.dataset.scenario];
+        scenarioRecommendation.textContent = scenario.recommendation;
+        scenarioReason.textContent = scenario.reason;
+        scenarioIdentity.innerHTML = scenario.identity;
+        scenarioClass.innerHTML = scenario.className;
+        scenarioCoverage.innerHTML = scenario.coverage;
+        scenarioButtons.forEach((candidate) => {
+          const active = candidate === button;
+          candidate.classList.toggle('active', active);
+          candidate.setAttribute('aria-pressed', String(active));
+        });
+      });
+    });
+  }
+
   const explainerPage = document.querySelector('.explainer-page');
   const progressFill = document.getElementById('explainProgressFill');
   const chapterLinks = document.querySelectorAll('.chapter-map a');

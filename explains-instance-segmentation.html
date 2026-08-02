@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pi5 Explains: instance segmentation, class-aware and class-agnostic masks in five minutes.">
+  <title>Instance Segmentation in Five Minutes — Neil De La Fuente</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css?v=20260802-seg">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">Neil De La Fuente</a>
+      <div class="nav-links">
+        <a href="index.html">About</a>
+        <a href="publications.html">Research</a>
+        <a href="blog.html">Blog</a>
+        <a href="podcast.html">Podcast</a>
+        <a href="explains.html" class="active">Pi5 Explains</a>
+        <button id="themeToggle" type="button" class="theme-toggle" aria-label="Toggle Theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+      <button class="mobile-menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="explain-progress" aria-hidden="true">
+    <span id="explainProgressFill"></span>
+  </div>
+
+  <main class="container explainer-page segmentation-page">
+    <nav class="pi5-series" aria-label="Pi5 Explains series">
+      <span class="pi5-series-label">π5 LIBRARY · 02 EXPLAINERS</span>
+      <a href="explains.html"><b>01</b> Gaussian splatting</a>
+      <a href="explains-instance-segmentation.html" class="active" aria-current="page"><b>02</b> Instance segmentation</a>
+    </nav>
+
+    <header class="explainer-header segmentation-header">
+      <p class="explainer-kicker">π5 EXPLAINS · 02 · 5 MIN · 4 INTERACTIONS</p>
+      <h1><span class="title-ink"><span class="title-word">Instance</span> <span class="title-word">segmentation,</span></span><br><span class="title-accent"><span class="title-word">without the</span> <span class="title-word">confusion.</span></span></h1>
+      <p class="explainer-lead">A mask can tell you <em>which pixels belong together</em> without telling you <em>what they are</em>. That single distinction separates class-agnostic from class-aware instance segmentation.</p>
+      <p class="explainer-promise">Use the same street scene four ways. By the end, you will know which pixels, identities, and labels each segmentation task actually promises.</p>
+    </header>
+
+    <section class="seg-hero-stage" aria-labelledby="seg-stage-title">
+      <div class="seg-stage-toolbar">
+        <div>
+          <span class="splat-index">01 / 04 · CHANGE THE QUESTION</span>
+          <strong id="seg-stage-title">Same pixels. Different answers.</strong>
+        </div>
+        <div class="seg-mode-buttons" role="group" aria-label="Choose a segmentation output">
+          <button type="button" class="seg-mode-button active" data-seg-task="image" aria-pressed="true">Image</button>
+          <button type="button" class="seg-mode-button" data-seg-task="semantic" aria-pressed="false">Semantic</button>
+          <button type="button" class="seg-mode-button" data-seg-task="instance" aria-pressed="false">Instance</button>
+          <button type="button" class="seg-mode-button" data-seg-task="panoptic" aria-pressed="false">Panoptic</button>
+        </div>
+      </div>
+      <canvas id="segTaskCanvas" class="seg-task-canvas" width="1600" height="800" aria-label="Interactive street scene. Switch between the original image, semantic segmentation, instance segmentation, and panoptic segmentation."></canvas>
+      <div class="seg-stage-caption">
+        <p id="segTaskCaption"><strong>Image:</strong> humans see objects immediately, but the computer only receives a grid of colour values.</p>
+        <div class="seg-output-schema" aria-label="Current output properties">
+          <span><b id="segClassStatus">—</b> classes</span>
+          <span><b id="segIdentityStatus">—</b> identities</span>
+          <span><b id="segCoverageStatus">pixels</b> coverage</span>
+        </div>
+      </div>
+    </section>
+
+    <nav class="chapter-map" aria-label="Explainer chapters">
+      <a href="#three-questions"><span>0:00</span>Three questions</a>
+      <a href="#aware-agnostic"><span>1:10</span>Aware or agnostic</a>
+      <a href="#routes"><span>2:30</span>Four routes</a>
+      <a href="#not-the-same"><span>3:45</span>Easy confusions</a>
+      <a href="#choose"><span>4:30</span>Choose a system</a>
+    </nav>
+
+    <section id="three-questions" class="explainer-lesson" aria-labelledby="three-questions-title" data-progress-label="Three questions">
+      <div class="lesson-heading lesson-heading-wide">
+        <p class="explainer-kicker">00:00 · THREE QUESTIONS</p>
+        <div>
+          <h2 id="three-questions-title">Do you need a class,<br>an identity—or both?</h2>
+          <p><strong>Semantic segmentation</strong> asks “what class is each pixel?” Every car pixel receives the same car label, so two touching cars may become one region. <strong>Instance segmentation</strong> asks “which countable object owns each pixel?” It separates car&nbsp;1 from car&nbsp;2. A common benchmark also attaches a class, but the separation and the naming are logically different jobs.</p>
+          <p><strong>Panoptic segmentation</strong> combines both views into one complete scene. Countable <em>things</em> such as people and cars get a class and an instance ID; amorphous <em>stuff</em> such as sky and road gets a class but normally no countable identity.</p>
+        </div>
+      </div>
+
+      <div class="seg-question-grid">
+        <article>
+          <span class="seg-question-number">A</span>
+          <div class="seg-question-icon semantic-icon" aria-hidden="true"><i></i><i></i><i></i></div>
+          <p class="explainer-kicker">SEMANTIC</p>
+          <h3>What is each pixel?</h3>
+          <p>All pixels of one class share one meaning. It understands “car,” not car&nbsp;1 versus car&nbsp;2.</p>
+          <code>pixel → class</code>
+        </article>
+        <article>
+          <span class="seg-question-number">B</span>
+          <div class="seg-question-icon instance-icon" aria-hidden="true"><i></i><i></i><i></i></div>
+          <p class="explainer-kicker">INSTANCE</p>
+          <h3>Which object owns it?</h3>
+          <p>Each countable object gets its own mask. A class label may be attached—but need not be.</p>
+          <code>pixel → instance ID</code>
+        </article>
+        <article>
+          <span class="seg-question-number">A+B</span>
+          <div class="seg-question-icon panoptic-icon" aria-hidden="true"><i></i><i></i><i></i></div>
+          <p class="explainer-kicker">PANOPTIC</p>
+          <h3>What, which, everywhere?</h3>
+          <p>Every pixel receives a coherent answer: stuff gets a class; things get class plus identity.</p>
+          <code>pixel → class + ID</code>
+        </article>
+      </div>
+
+      <aside class="concept-note seg-concept-note">
+        <span class="concept-note-mark">≠</span>
+        <p><strong>A box is not a mask.</strong> Object detection says roughly where an object is with a rectangle. Instance segmentation traces the exact pixels, which matters for overlap, compositing, measurement, and manipulation.</p>
+        <code>mask ⊂ image</code>
+      </aside>
+    </section>
+
+    <section id="aware-agnostic" class="explainer-lesson" aria-labelledby="aware-title" data-progress-label="Aware or agnostic">
+      <div class="lesson-heading lesson-heading-wide">
+        <p class="explainer-kicker">01:10 · THE COMMON CONFUSION</p>
+        <div>
+          <h2 id="aware-title">Identity is not the same<br>as category.</h2>
+          <p>A <strong>class-aware</strong> system returns a semantic category with each instance: “person,” “car,” or “dog.” A <strong>class-agnostic</strong> system only needs to separate objects: “mask&nbsp;1,” “mask&nbsp;2,” and “mask&nbsp;3.” It can leave naming to a later classifier—or never name the objects at all.</p>
+          <p>Class-agnostic does <strong>not</strong> mean “magically finds every unseen object.” Training data, prompts, thresholds, and the model’s notion of objectness still matter. It describes the output contract: instance boundaries are predicted or evaluated without requiring the correct semantic category.</p>
+        </div>
+      </div>
+
+      <div class="awareness-lab">
+        <div class="awareness-toolbar">
+          <div>
+            <span class="splat-index">02 / 04 · SWITCH THE OUTPUT CONTRACT</span>
+            <strong id="awarenessModeTitle">Closed-set class-aware</strong>
+          </div>
+          <div class="seg-mode-buttons" role="group" aria-label="Compare instance segmentation label modes">
+            <button type="button" class="awareness-button active" data-awareness-mode="aware" aria-pressed="true">Class-aware</button>
+            <button type="button" class="awareness-button" data-awareness-mode="agnostic" aria-pressed="false">Class-agnostic</button>
+            <button type="button" class="awareness-button" data-awareness-mode="open" aria-pressed="false">Open-vocabulary</button>
+          </div>
+        </div>
+        <canvas id="awarenessCanvas" class="awareness-canvas" width="1500" height="700" aria-label="Interactive comparison of class-aware, class-agnostic, and open-vocabulary instance segmentation in a scene containing a novel delivery robot."></canvas>
+        <div class="awareness-readout">
+          <p id="awarenessCaption"><strong>Known vocabulary:</strong> masks carry labels from a fixed training set. The unfamiliar delivery robot may be missed or forced into the wrong class.</p>
+          <dl>
+            <div><dt>OUTPUT</dt><dd id="awarenessSchema">mask + class + score</dd></div>
+            <div><dt>NOVEL OBJECT</dt><dd id="awarenessNovel">may be missed</dd></div>
+            <div><dt>SEMANTICS</dt><dd id="awarenessSemantics">fixed vocabulary</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="axis-comparison">
+        <article class="axis-card axis-aware">
+          <span>CLASS-AWARE</span>
+          <h3>Separate + name</h3>
+          <p>Useful when the downstream action depends on category: count cars, inspect defects by type, or track pedestrians.</p>
+          <code>{ mask, class, score }</code>
+        </article>
+        <div class="axis-divider" aria-hidden="true"><span>VS</span></div>
+        <article class="axis-card axis-agnostic">
+          <span>CLASS-AGNOSTIC</span>
+          <h3>Separate first</h3>
+          <p>Useful for object discovery, annotation tools, cells or parts with unknown taxonomies, and classify-later pipelines.</p>
+          <code>{ mask, score }</code>
+        </article>
+      </div>
+    </section>
+
+    <section id="routes" class="explainer-lesson" aria-labelledby="routes-title" data-progress-label="Four routes">
+      <div class="lesson-heading lesson-heading-wide">
+        <p class="explainer-kicker">02:30 · HOW MASKS ARE PRODUCED</p>
+        <div>
+          <h2 id="routes-title">Different machinery.<br>The same mask-shaped goal.</h2>
+          <p>Class-aware and class-agnostic are properties of the task or output—not a unique architecture. Detection-based, bottom-up, query-based, and promptable systems can all produce instance masks. What changes is how they propose and separate the objects.</p>
+        </div>
+      </div>
+
+      <div class="method-lab">
+        <div class="method-tabs" role="tablist" aria-label="Instance segmentation method families">
+          <button type="button" role="tab" class="method-tab active" data-method="topdown" aria-selected="true"><span>01</span>Top-down</button>
+          <button type="button" role="tab" class="method-tab" data-method="bottomup" aria-selected="false"><span>02</span>Bottom-up</button>
+          <button type="button" role="tab" class="method-tab" data-method="query" aria-selected="false"><span>03</span>Query-based</button>
+          <button type="button" role="tab" class="method-tab" data-method="prompt" aria-selected="false"><span>04</span>Promptable</button>
+        </div>
+        <div class="method-stage">
+          <div class="method-canvas-wrap">
+            <span class="splat-index">03 / 04 · FOLLOW THE INFORMATION</span>
+            <canvas id="methodCanvas" class="method-canvas" width="1000" height="620" aria-label="Interactive diagram showing how the selected instance segmentation method turns image features into masks."></canvas>
+          </div>
+          <div class="method-copy">
+            <p class="explainer-kicker" id="methodEyebrow">DETECT → CROP → MASK</p>
+            <h3 id="methodTitle">Top-down: find objects, then trace them.</h3>
+            <p id="methodDescription">A detector proposes a box for each likely object. A mask head predicts foreground pixels inside every proposal. Mask R-CNN is the classic example.</p>
+            <div class="method-pipeline" aria-label="Selected method pipeline">
+              <span id="methodStepOne">image features</span><i>→</i><span id="methodStepTwo">object boxes</span><i>→</i><span id="methodStepThree">masks + labels</span>
+            </div>
+            <p class="method-footnote" id="methodFootnote"><strong>Class relation:</strong> often class-aware, although a shared class-agnostic mask head is also possible.</p>
+          </div>
+        </div>
+      </div>
+
+      <ol class="render-recipe method-recipe">
+        <li><span>01</span><p><strong>Top-down</strong> finds candidate objects first, then predicts a mask inside each region.</p></li>
+        <li><span>02</span><p><strong>Bottom-up</strong> predicts pixel cues first, then groups pixels that appear to belong together.</p></li>
+        <li><span>03</span><p><strong>Query-based</strong> predicts a set of mask-and-label pairs and assigns each object to one query.</p></li>
+        <li><span>04</span><p><strong>Promptable</strong> turns a point, box, or prior mask into one or more plausible object masks.</p></li>
+      </ol>
+    </section>
+
+    <section id="not-the-same" class="explainer-lesson" aria-labelledby="confusions-title" data-progress-label="Easy confusions">
+      <div class="lesson-heading lesson-heading-wide">
+        <p class="explainer-kicker">03:45 · KEEP THE AXES SEPARATE</p>
+        <div>
+          <h2 id="confusions-title">Three phrases that sound<br>more similar than they are.</h2>
+          <p><strong>Class-agnostic</strong> means category is not required for each mask. <strong>Open-vocabulary</strong> means categories can be supplied flexibly—often as text—instead of coming only from a fixed training list. Open-vocabulary output is still class-aware when it names the object.</p>
+          <p><strong>Promptable</strong> describes the interaction. A model such as Segment Anything receives a point, box, or mask prompt and returns a class-agnostic mask. It does not attach a semantic name by itself, and prompting one object is not the same as automatically discovering every object in the image.</p>
+        </div>
+      </div>
+
+      <div class="myth-grid">
+        <article>
+          <span class="myth-mark">01</span>
+          <p class="myth-claim">“Class-agnostic means open-vocabulary.”</p>
+          <div class="myth-verdict"><b>FALSE</b><span>No labels and flexible labels are different contracts.</span></div>
+        </article>
+        <article>
+          <span class="myth-mark">02</span>
+          <p class="myth-claim">“Every instance model must name the class.”</p>
+          <div class="myth-verdict"><b>FALSE</b><span>An instance ID is enough to separate mask A from mask B.</span></div>
+        </article>
+        <article>
+          <span class="myth-mark">03</span>
+          <p class="myth-claim">“Class-agnostic guarantees unseen objects.”</p>
+          <div class="myth-verdict"><b>FALSE</b><span>Generalisation still depends on data, objectness, and prompting.</span></div>
+        </article>
+      </div>
+
+      <div class="evaluation-strip">
+        <div>
+          <p class="explainer-kicker">THE EVALUATION CHANGES TOO</p>
+          <h3>Same overlap. Different notion of correct.</h3>
+        </div>
+        <div class="evaluation-example">
+          <span class="evaluation-mask" aria-hidden="true"></span>
+          <p><strong>IoU = 0.82</strong><span>The mask overlaps the object well.</span></p>
+        </div>
+        <div class="evaluation-result evaluation-aware-result">
+          <span>CLASS-AWARE</span>
+          <strong>Wrong label → miss</strong>
+        </div>
+        <div class="evaluation-result evaluation-agnostic-result">
+          <span>CLASS-AGNOSTIC</span>
+          <strong>Class ignored → match</strong>
+        </div>
+      </div>
+    </section>
+
+    <section id="choose" class="explainer-lesson" aria-labelledby="choose-title" data-progress-label="Choose a system">
+      <div class="lesson-heading lesson-heading-wide">
+        <p class="explainer-kicker">04:30 · START FROM THE APPLICATION</p>
+        <div>
+          <h2 id="choose-title">Ask what information<br>must survive downstream.</h2>
+          <p>Do not choose from model names first. Choose the output contract. If the application only needs separate regions, class-agnostic masks avoid committing to a taxonomy. If it needs category-specific decisions, include semantics. If it needs complete scene coverage, move toward semantic or panoptic segmentation.</p>
+        </div>
+      </div>
+
+      <div class="scenario-lab">
+        <div class="scenario-picker" role="group" aria-label="Choose an instance segmentation application">
+          <span class="splat-index">04 / 04 · CHOOSE A REQUIREMENT</span>
+          <button type="button" class="scenario-button active" data-scenario="traffic" aria-pressed="true">Count cars by type</button>
+          <button type="button" class="scenario-button" data-scenario="click" aria-pressed="false">Segment anything I click</button>
+          <button type="button" class="scenario-button" data-scenario="scene" aria-pressed="false">Label the whole street</button>
+          <button type="button" class="scenario-button" data-scenario="warehouse" aria-pressed="false">Discover unknown products</button>
+        </div>
+        <div class="scenario-answer" aria-live="polite">
+          <p class="explainer-kicker">RECOMMENDED OUTPUT</p>
+          <h3 id="scenarioRecommendation">Class-aware instance segmentation</h3>
+          <p id="scenarioReason">You need a separate mask for every vehicle and a category such as car, van, or bicycle for the count.</p>
+          <div class="scenario-schema">
+            <span id="scenarioIdentity"><b>IDENTITY</b> required</span>
+            <span id="scenarioClass"><b>CLASS</b> required</span>
+            <span id="scenarioCoverage"><b>ALL PIXELS</b> not required</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="final-recap segmentation-recap">
+        <p class="explainer-kicker">05:00 · THE MENTAL MODEL</p>
+        <h2>Identity separates.<br>Semantics names.<br>Coverage completes the scene.</h2>
+        <div class="recap-row">
+          <p><strong>Instance</strong><span>Which individual object owns these pixels?</span></p>
+          <p><strong>Class</strong><span>What semantic category should that object carry?</span></p>
+          <p><strong>Vocabulary</strong><span>Are labels fixed, flexible, or omitted entirely?</span></p>
+        </div>
+        <div class="recap-actions">
+          <a class="splat-button" href="#three-questions">Revisit from the top ↑</a>
+          <a class="splat-button splat-button-solid" href="explains.html">Previous: Gaussian splatting ←</a>
+        </div>
+      </aside>
+
+      <aside class="explainer-takeaway">
+        <span class="takeaway-mark">∴</span>
+        <p><strong>One-sentence answer:</strong> instance segmentation separates objects pixel by pixel; class-aware systems also name each object, while class-agnostic systems keep the masks and identities without requiring a category.</p>
+      </aside>
+
+      <div class="explainer-sources" aria-labelledby="sources-title">
+        <p class="explainer-kicker" id="sources-title">ORIGINAL PAPERS · GO DEEPER</p>
+        <a href="https://arxiv.org/abs/1703.06870" target="_blank" rel="noopener"><span>2017</span>Mask R-CNN ↗</a>
+        <a href="https://arxiv.org/abs/1801.00868" target="_blank" rel="noopener"><span>2018</span>Panoptic Segmentation ↗</a>
+        <a href="https://arxiv.org/abs/2112.01527" target="_blank" rel="noopener"><span>2021</span>Mask2Former ↗</a>
+        <a href="https://arxiv.org/abs/2304.02643" target="_blank" rel="noopener"><span>2023</span>Segment Anything ↗</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container site-footer">
+    <p>© 2026 Neil De La Fuente. ETH Zürich.</p>
+  </footer>
+
+  <script src="script.js?v=20260802-seg"></script>
+</body>
+</html>

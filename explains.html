@@ -6,7 +6,7 @@
   <meta name="description" content="Pi5 Explains: Gaussian splatting in five minutes.">
   <title>Gaussian Splatting in Five Minutes — Neil De La Fuente</title>
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=20260802">
+  <link rel="stylesheet" href="style.css?v=20260802-seg">
 </head>
 <body>
 
@@ -44,8 +44,14 @@
   </div>
 
   <main class="container explainer-page">
+    <nav class="pi5-series" aria-label="Pi5 Explains series">
+      <span class="pi5-series-label">π5 LIBRARY · 02 EXPLAINERS</span>
+      <a href="explains.html" class="active" aria-current="page"><b>01</b> Gaussian splatting</a>
+      <a href="explains-instance-segmentation.html"><b>02</b> Instance segmentation</a>
+    </nav>
+
     <header class="explainer-header">
-      <p class="explainer-kicker">π5 EXPLAINS · 5 MIN · 3 INTERACTIONS</p>
+      <p class="explainer-kicker">π5 EXPLAINS · 01 · 5 MIN · 3 INTERACTIONS</p>
       <h1><span class="title-ink"><span class="title-word">Gaussian</span> <span class="title-word">splatting,</span></span><br><span class="title-accent"><span class="title-word">in five</span> <span class="title-word">minutes.</span></span></h1>
       <p class="explainer-lead">How can a computer rebuild a place from photographs—and then show it from a camera position that never existed? The answer is a cloud of soft, coloured 3D ellipsoids.</p>
       <p class="explainer-promise">Scroll, drag, and experiment. By the end you will understand what a Gaussian stores, how a view is rendered, and how the cloud learns from images.</p>
@@ -294,6 +300,7 @@
         <div class="recap-actions">
           <a class="splat-button" href="#the-problem">Revisit from the top ↑</a>
           <a class="splat-button splat-button-solid" href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/" target="_blank" rel="noopener">Read the original paper ↗</a>
+          <a class="splat-button" href="explains-instance-segmentation.html">Next: Instance segmentation →</a>
         </div>
       </aside>
 
@@ -308,6 +315,6 @@
     <p>© 2026 Neil De La Fuente. ETH Zürich.</p>
   </footer>
 
-  <script src="script.js?v=20260802"></script>
+  <script src="script.js?v=20260802-seg"></script>
 </body>
 </html>
