@@ -525,6 +525,263 @@ p {
   color: var(--text-dim);
 }
 
+.explainer-lesson {
+  padding: 0;
+  margin: 7rem 0;
+  border: 0;
+}
+
+.lesson-heading {
+  display: grid;
+  grid-template-columns: 155px minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+  max-width: 850px;
+  margin-bottom: 2.5rem;
+}
+
+.lesson-heading .explainer-kicker {
+  padding-top: 0.6rem;
+}
+
+.lesson-heading h2 {
+  margin-bottom: 1rem;
+  font-size: clamp(1.9rem, 4vw, 3.25rem);
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+}
+
+.lesson-heading p:not(.explainer-kicker) {
+  max-width: 63ch;
+  color: var(--text-dim);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.lesson-heading-wide {
+  max-width: 100%;
+}
+
+.gaussian-inspector {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(265px, 0.7fr);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-offset);
+  box-shadow: var(--shadow);
+}
+
+.canvas-panel {
+  padding: 1rem;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+}
+
+.canvas-panel-header,
+.workbench-toolbar,
+.controls-eyebrow,
+.canvas-instruction,
+.scene-caption {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+
+.canvas-panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.2rem 0.2rem 0.85rem;
+  color: var(--text-dim);
+}
+
+.canvas-panel-header span:first-child,
+.controls-eyebrow {
+  color: var(--accent);
+}
+
+.lesson-canvas {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg-offset);
+}
+
+.gaussian-canvas {
+  aspect-ratio: 1.57;
+  cursor: grab;
+  touch-action: none;
+}
+
+.gaussian-canvas:active {
+  cursor: grabbing;
+}
+
+.canvas-instruction {
+  margin: 0.8rem 0 0.1rem;
+  color: var(--text-dim);
+}
+
+.controls-panel {
+  padding: 1.75rem;
+}
+
+.controls-eyebrow {
+  margin-bottom: 1.75rem;
+}
+
+.lesson-control {
+  display: block;
+  margin-bottom: 1.45rem;
+}
+
+.lesson-control span {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.55rem;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.lesson-control output {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+.lesson-control input,
+.camera-control input {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.controls-note {
+  margin: 1.8rem 0 0;
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+
+.scene-workbench {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg-offset);
+  box-shadow: var(--shadow);
+}
+
+.workbench-toolbar {
+  display: grid;
+  grid-template-columns: minmax(230px, 1fr) auto auto;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.camera-control {
+  display: grid;
+  grid-template-columns: auto minmax(110px, 1fr) 30px;
+  gap: 0.85rem;
+  align-items: center;
+  color: var(--accent);
+}
+
+.camera-control output {
+  color: var(--text-dim);
+  text-align: right;
+}
+
+.render-mode {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.mode-button,
+.reset-scene {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-dim);
+  padding: 0.45rem 0.7rem;
+  font: 500 0.68rem var(--font-sans);
+  cursor: pointer;
+}
+
+.mode-button.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.reset-scene:hover,
+.mode-button:hover:not(.active) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.scene-canvas {
+  border: 0;
+  border-radius: 0;
+  aspect-ratio: 2.06;
+}
+
+.scene-caption {
+  padding: 0.9rem 1.25rem 1rem;
+  margin: 0;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.scene-caption strong {
+  color: var(--text);
+}
+
+.render-recipe {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin: 1.5rem 0 0;
+  list-style: none;
+}
+
+.render-recipe li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 0.65rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--border);
+}
+
+.render-recipe span {
+  padding-top: 0.2rem;
+  color: var(--accent);
+  font: 500 0.72rem var(--font-mono);
+}
+
+.render-recipe p {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+
+.render-recipe strong {
+  color: var(--text);
+}
+
+.explainer-last {
+  margin-bottom: 2rem;
+}
+
 .splat-stage {
   --pointer-x: 0px;
   --pointer-y: 0px;
@@ -735,6 +992,23 @@ p {
     gap: 1.25rem;
   }
 
+  .gaussian-inspector {
+    grid-template-columns: 1fr;
+  }
+
+  .canvas-panel {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .workbench-toolbar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .camera-control {
+    grid-column: 1 / -1;
+  }
+
   .explainer-takeaway {
     grid-template-columns: auto 1fr;
   }
@@ -742,6 +1016,56 @@ p {
   .splat-button {
     grid-column: 2;
     justify-self: start;
+  }
+
+  .lesson-heading {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .lesson-heading .explainer-kicker {
+    padding-top: 0;
+  }
+
+  .explainer-lesson {
+    margin: 4.5rem 0;
+  }
+
+  .controls-panel {
+    padding: 1.35rem;
+  }
+
+  .workbench-toolbar {
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .camera-control {
+    grid-template-columns: 1fr 28px;
+    gap: 0.5rem;
+  }
+
+  .camera-control span {
+    grid-column: 1 / -1;
+  }
+
+  .render-mode {
+    gap: 0.2rem;
+  }
+
+  .mode-button,
+  .reset-scene {
+    padding: 0.4rem 0.55rem;
+    font-size: 0.65rem;
+  }
+
+  .scene-canvas {
+    aspect-ratio: 1.28;
+  }
+
+  .render-recipe {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
   }
 }
 

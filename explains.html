@@ -63,29 +63,96 @@
       </div>
     </section>
 
-    <section class="explainer-steps" aria-label="How Gaussian splatting works">
-      <article>
-        <span>01</span>
-        <h2>Capture</h2>
-        <p>Images from many viewpoints reveal where visual evidence lives in 3D.</p>
-      </article>
-      <article>
-        <span>02</span>
-        <h2>Represent</h2>
-        <p>Each Gaussian has a position, scale, colour, opacity, and orientation.</p>
-      </article>
-      <article>
-        <span>03</span>
-        <h2>Splat</h2>
-        <p>Project and blend the ellipses. New views appear at real-time speed.</p>
-      </article>
+    <section class="explainer-lesson" aria-labelledby="one-gaussian-title">
+      <div class="lesson-heading">
+        <p class="explainer-kicker">01 · ONE GAUSSIAN</p>
+        <div>
+          <h2 id="one-gaussian-title">A soft 3D ellipsoid<br>becomes a 2D ellipse.</h2>
+          <p>Each point in the cloud is a tiny, fuzzy volume. Its centre is <strong>μ</strong>; its shape and direction are its <strong>covariance Σ</strong>. From a camera, that volume lands on the screen as an ellipse.</p>
+        </div>
+      </div>
+
+      <div class="gaussian-inspector">
+        <div class="canvas-panel">
+          <div class="canvas-panel-header">
+            <span>ONE SPLAT · SCREEN SPACE</span>
+            <span id="gaussianPositionReadout">μ = (0.00, 0.00)</span>
+          </div>
+          <canvas id="gaussianCanvas" class="lesson-canvas gaussian-canvas" width="880" height="560" aria-label="Interactive Gaussian ellipse. Drag it to change its centre, then use the controls to change its scale, stretch, rotation, and opacity."></canvas>
+          <p class="canvas-instruction">Drag the centre. The sliders change its projected footprint.</p>
+        </div>
+
+        <div class="controls-panel">
+          <p class="controls-eyebrow">EDIT THE GAUSSIAN</p>
+          <label class="lesson-control" for="gaussianScale">
+            <span>Scale <output id="gaussianScaleOutput">62</output></span>
+            <input id="gaussianScale" type="range" min="30" max="105" value="62">
+          </label>
+          <label class="lesson-control" for="gaussianStretch">
+            <span>Stretch <output id="gaussianStretchOutput">1.55×</output></span>
+            <input id="gaussianStretch" type="range" min="100" max="260" value="155">
+          </label>
+          <label class="lesson-control" for="gaussianRotation">
+            <span>Rotation <output id="gaussianRotationOutput">-28°</output></span>
+            <input id="gaussianRotation" type="range" min="-90" max="90" value="-28">
+          </label>
+          <label class="lesson-control" for="gaussianOpacity">
+            <span>Opacity <output id="gaussianOpacityOutput">68%</output></span>
+            <input id="gaussianOpacity" type="range" min="20" max="100" value="68">
+          </label>
+          <p class="controls-note"><strong>Important:</strong> a Gaussian is not a coloured disc pasted on an image. It has a 3D position, 3D extent, orientation, colour, and opacity. This ellipse is its camera-facing footprint.</p>
+        </div>
+      </div>
     </section>
 
-    <aside class="explainer-takeaway">
-      <span class="takeaway-mark">∴</span>
-      <p><strong>The trick:</strong> approximate geometry with a dense, learnable cloud of translucent ellipses—fast enough to make novel-view synthesis feel immediate.</p>
-      <button class="splat-button" type="button" aria-pressed="false">Shuffle the cloud</button>
-    </aside>
+    <section class="explainer-lesson" aria-labelledby="scene-title">
+      <div class="lesson-heading lesson-heading-wide">
+        <p class="explainer-kicker">02 · MANY GAUSSIANS</p>
+        <div>
+          <h2 id="scene-title">Move the camera.<br>The cloud makes a new view.</h2>
+          <p>The same 3D Gaussians are projected from a new viewpoint, ordered from back to front, and alpha-blended. Nothing is hallucinated per pixel: it is fast rasterisation of learned geometry.</p>
+        </div>
+      </div>
+
+      <div class="scene-workbench">
+        <div class="workbench-toolbar">
+          <label class="camera-control" for="sceneAngle">
+            <span>ORBIT CAMERA</span>
+            <input id="sceneAngle" type="range" min="-70" max="70" value="0" aria-describedby="sceneAngleReadout">
+            <output id="sceneAngleReadout">0°</output>
+          </label>
+          <div class="render-mode" role="group" aria-label="Render view">
+            <button class="mode-button active" type="button" data-render-mode="geometry" aria-pressed="true">See Gaussians</button>
+            <button class="mode-button" type="button" data-render-mode="render" aria-pressed="false">Blend render</button>
+          </div>
+          <button class="reset-scene" type="button">Reset view</button>
+        </div>
+        <canvas id="sceneCanvas" class="lesson-canvas scene-canvas" width="1400" height="680" aria-label="Interactive two-panel Gaussian scene. Move the orbit camera slider to change the rendered view, and switch between Gaussian geometry and the blended render."></canvas>
+        <p id="sceneCaption" class="scene-caption"><strong>Geometry view:</strong> the left panel is the 3D cloud; the right panel shows the projected ellipses before they are blended.</p>
+      </div>
+
+      <ol class="render-recipe">
+        <li><span>01</span><p><strong>Project</strong> each 3D ellipsoid through the current camera.</p></li>
+        <li><span>02</span><p><strong>Sort</strong> the 2D footprints by depth, far to near.</p></li>
+        <li><span>03</span><p><strong>Blend</strong> their translucent colours into the final image.</p></li>
+      </ol>
+    </section>
+
+    <section class="explainer-lesson explainer-last" aria-labelledby="training-title">
+      <div class="lesson-heading">
+        <p class="explainer-kicker">03 · LEARNING THE CLOUD</p>
+        <div>
+          <h2 id="training-title">Training adjusts the blobs,<br>not the rules of rendering.</h2>
+          <p>Start with a rough cloud. Render it from a known photo position. Compare the render with that photo. Then nudge every Gaussian’s position, shape, colour, and opacity until the views agree.</p>
+        </div>
+      </div>
+
+      <aside class="explainer-takeaway">
+        <span class="takeaway-mark">∴</span>
+        <p><strong>Why it matters:</strong> after training, a new view only needs projection, depth sorting, and alpha blending. That is why Gaussian splatting can be both geometric and real-time.</p>
+        <a class="splat-button" href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/" target="_blank" rel="noopener">Original paper ↗</a>
+      </aside>
+    </section>
   </main>
 
   <footer class="container site-footer">
