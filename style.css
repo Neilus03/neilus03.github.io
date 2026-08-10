@@ -259,6 +259,16 @@ p {
   font-size: 0.85rem;
 }
 
+.news-text a {
+  color: var(--accent);
+  border-bottom: 1px solid transparent;
+}
+
+.news-text a:hover,
+.news-text a:focus-visible {
+  border-color: var(--accent);
+}
+
 /* ─── Social Icons ───────────────────────────────────────── */
 .social-icons {
   display: flex;
@@ -379,6 +389,10 @@ p {
   transform: scale(1.018);
 }
 
+.post-visual-shape img {
+  object-position: center 54%;
+}
+
 .post-visual:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 4px;
@@ -415,6 +429,12 @@ p {
   letter-spacing: -0.035em;
 }
 
+.post-item-featured .item-title a {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: normal;
+}
+
 .post-item-featured .item-summary {
   max-width: 54ch;
   font-size: 1rem;
@@ -432,6 +452,53 @@ p {
   color: var(--text-dim);
   font: 500 0.65rem var(--font-mono);
   letter-spacing: 0.02em;
+}
+
+.post-visual-lottery {
+  background: #11130f;
+}
+
+.lottery-triptych {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  width: 100%;
+  height: 100%;
+  background: #11130f;
+}
+
+.lottery-frame {
+  position: relative;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  background: #858a7e;
+}
+
+.lottery-frame img {
+  filter: saturate(0.86) contrast(1.04);
+}
+
+.lottery-frame > span {
+  position: absolute;
+  left: 0.45rem;
+  bottom: 0.4rem;
+  max-width: calc(100% - 0.9rem);
+  padding: 0.24rem 0.38rem;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(14, 15, 13, 0.82);
+  color: #ffffff;
+  font: 500 0.5rem var(--font-mono);
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  backdrop-filter: blur(6px);
+}
+
+.post-visual-lottery .post-visual-badge {
+  color: #f5d36c;
 }
 
 /* ─── Podcast Section ──────────────────────────── */
@@ -2489,6 +2556,11 @@ p {
 
   .post-item-featured .item-title {
     font-size: clamp(1.55rem, 8vw, 2rem);
+  }
+
+  .post-item-lottery .item-title {
+    max-width: 100%;
+    font-size: clamp(1.45rem, 7vw, 1.82rem);
   }
 
   .post-visual-badge {
