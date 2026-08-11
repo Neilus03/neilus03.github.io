@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pi5 Explains offers brief, visual-first lessons on computer vision, 3D vision, and machine learning.">
+  <title>Pi5 Explains — Visual Lessons in Five Minutes</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" href="../style.css?v=20260811-explains-hub">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="../index.html" class="nav-brand">Neil De La Fuente</a>
+      <div class="nav-links">
+        <a href="../index.html">About</a>
+        <a href="../publications.html">Research</a>
+        <a href="../blog.html">Blog</a>
+        <a href="../podcast.html">Podcast</a>
+        <a href="./" class="active" aria-current="page">Pi5 Explains</a>
+        <button id="themeToggle" type="button" class="theme-toggle" aria-label="Toggle Theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+      <button class="mobile-menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="container explains-hub">
+    <header class="explains-hub-hero">
+      <p class="explains-hub-kicker">π5 EXPLAINS · VISUAL LESSONS</p>
+      <h1>Hard ideas.<br><span>Five clear minutes.</span></h1>
+      <p class="explains-hub-lead">Brief, visual-first explanations of computer vision, 3D vision, and machine learning. Start with the mental model, experiment with the idea, then follow the original papers when you want to go deeper.</p>
+      <ul class="explains-hub-principles" aria-label="What every Pi5 explainer includes">
+        <li><strong>See it</strong><span>Purpose-built visuals</span></li>
+        <li><strong>Try it</strong><span>Hands-on interactions</span></li>
+        <li><strong>Keep it</strong><span>One lasting mental model</span></li>
+      </ul>
+    </header>
+
+    <section class="explains-library" aria-labelledby="library-title">
+      <div class="explains-library-heading">
+        <div>
+          <p class="explains-hub-kicker">THE LIBRARY</p>
+          <h2 id="library-title">Choose a five-minute lesson.</h2>
+        </div>
+        <p>Two interactive explainers · no prerequisites</p>
+      </div>
+
+      <div class="lesson-card-grid">
+        <article class="lesson-card lesson-card-gaussian">
+          <a class="lesson-card-link" href="../explains.html" aria-label="Open Gaussian splatting in five minutes">
+            <div class="lesson-card-visual gaussian-card-visual" aria-hidden="true">
+              <span class="gaussian-card-orbit"></span>
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+              <b>3D → 2D</b>
+            </div>
+            <div class="lesson-card-body">
+              <p class="lesson-card-meta"><span>01 · 3D Vision</span><span>5 min · 3 interactions</span></p>
+              <h2>Gaussian splatting</h2>
+              <p>How photographs supervise a cloud of soft 3D ellipsoids—and how that cloud renders a camera view that never existed.</p>
+              <ul class="lesson-card-topics" aria-label="Lesson topics">
+                <li>Representation</li>
+                <li>Rendering</li>
+                <li>Training</li>
+              </ul>
+              <span class="lesson-card-action">Start the lesson <b aria-hidden="true">→</b></span>
+            </div>
+          </a>
+        </article>
+
+        <article class="lesson-card lesson-card-segmentation">
+          <a class="lesson-card-link" href="../explains-instance-segmentation.html" aria-label="Open Instance segmentation without the confusion">
+            <div class="lesson-card-visual segmentation-card-visual" aria-hidden="true">
+              <span class="seg-card-object seg-card-object-one"></span>
+              <span class="seg-card-object seg-card-object-two"></span>
+              <span class="seg-card-object seg-card-object-three"></span>
+              <span class="seg-card-label seg-card-label-one">01</span>
+              <span class="seg-card-label seg-card-label-two">02</span>
+              <b>pixels → objects</b>
+            </div>
+            <div class="lesson-card-body">
+              <p class="lesson-card-meta"><span>02 · Computer Vision</span><span>5 min · 4 interactions</span></p>
+              <h2>Instance segmentation</h2>
+              <p>Which pixels belong together, which object owns them, and when a system also needs to know the object's class.</p>
+              <ul class="lesson-card-topics" aria-label="Lesson topics">
+                <li>Identity</li>
+                <li>Semantics</li>
+                <li>Panoptic masks</li>
+              </ul>
+              <span class="lesson-card-action">Start the lesson <b aria-hidden="true">→</b></span>
+            </div>
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <section class="explains-hub-promise" aria-labelledby="promise-title">
+      <p class="explains-hub-kicker">THE PI5 EXPLAINS PROMISE</p>
+      <h2 id="promise-title">Intuition first. Precision where it matters.</h2>
+      <p>Every lesson is designed to leave you with an explanation you can reconstruct later—not a list of terms you have to memorize. Equations and papers are included when they sharpen the idea, never as a substitute for understanding it.</p>
+      <p class="explains-hub-podcast-note"><strong>Pi5 Podcast is a separate project:</strong> a Spanish-language audio series with five-minute explanations of mathematical ideas.</p>
+      <a href="../podcast.html" class="splat-button">Visit the separate Pi5 Podcast →</a>
+    </section>
+  </main>
+
+  <footer class="container site-footer">
+    <p>© 2026 Neil De La Fuente. ETH Zürich.</p>
+  </footer>
+
+  <script src="../script.js?v=20260802-seg"></script>
+</body>
+</html>
