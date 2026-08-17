@@ -651,6 +651,11 @@ p {
   border: 1px solid var(--border);
 }
 
+.pub-img-contain {
+  object-fit: contain;
+  background: #fff;
+}
+
 .site-footer {
   padding: 4rem 0;
   border-top: 1px solid var(--border);
