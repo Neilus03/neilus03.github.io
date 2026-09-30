@@ -661,9 +661,40 @@ p {
   align-self: start;
 }
 
-.pub-visual .pub-img {
+.spaceflow-preview {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.spaceflow-preview:hover {
+  border-color: var(--accent);
+}
+
+.spaceflow-preview:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.spaceflow-preview img {
   display: block;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.spaceflow-preview canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.spaceflow-preview[data-ready="true"] img {
+  opacity: 0;
 }
 
 .site-footer {

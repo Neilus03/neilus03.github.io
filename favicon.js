@@ -6,7 +6,7 @@
   if (!script || !icon) return;
 
   // Chrome displays only the first frame of animated image favicons. Swap
-  // pre-rendered PNG frames instead; no 3D library runs on the published site.
+  // pre-rendered PNG frames instead; the favicon needs no 3D renderer.
   const size = 64;
   const columns = 8;
   const frameCount = 32;

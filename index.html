@@ -7,7 +7,8 @@
   <title>Neil De La Fuente — ETH Zürich | PRS Lab</title>
   <link rel="icon" type="image/png" sizes="64x64" href="favicon-spaceflow.png?v=20260930">
   <script src="favicon.js?v=20260930" defer></script>
-  <link rel="stylesheet" href="style.css?v=20260930-publications">
+  <script type="module" src="spaceflow-preview.js?v=20260930-3d"></script>
+  <link rel="stylesheet" href="style.css?v=20260930-3d">
 </head>
 
 <body>
@@ -162,11 +163,12 @@
       <div class="pub-list">
         <!-- 2026 -->
         <article class="pub-item">
-          <picture class="pub-visual">
-            <source media="(prefers-reduced-motion: reduce)" srcset="figs/spaceflow-ironman-still.webp">
-            <img src="figs/spaceflow-ironman.webp" alt="SpaceFlow image conditioning: rotating input geometry and an Iron Man figurine with a Spider-Man head"
-              class="pub-img pub-img-contain" width="480" height="360" loading="lazy" decoding="async">
-          </picture>
+          <a href="https://neilus03.github.io/spaceflow/" class="pub-visual spaceflow-preview"
+            data-spaceflow-preview aria-label="Explore SpaceFlow: rotating Iron Man 3D example"
+            target="_blank" rel="noopener noreferrer">
+            <img src="figs/spaceflow-preview.webp" alt="Input geometry and a generated Iron Man figurine with a Spider-Man head"
+              width="480" height="360" loading="lazy" decoding="async">
+          </a>
           <div class="pub-content">
             <h3 class="pub-title">SpaceFlow: Locally Controllable 3D Generation</h3>
             <p class="pub-authors"><strong>N De La Fuente</strong>, J Lafuente Baeza,
