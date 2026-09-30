@@ -1,4 +1,4 @@
-// A standalone version of the Iron Man pair from the SpaceFlow 3D teaser.
+// The Iron Man image-conditioning example, rebuilt from the original teaser assets.
 const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const previews = document.querySelectorAll('[data-spaceflow-preview]');
 
@@ -25,9 +25,14 @@ async function mountPreview(link) {
 
   const pitch = 0.29;
   const loader = new GLTFLoader();
+  const layout = [[46, 12.6, 106, 211.7], [214, 14, 126, 205]];
+  const annotations = [
+    { part: 5, start: [159, 15], path: link.querySelector('[data-spaceflow-leader="head"]') },
+    { part: 4, start: [51, 116], path: link.querySelector('[data-spaceflow-leader="body"]') }
+  ];
   let views;
   try {
-    views = await Promise.all(['input', 'output'].map(async (role) => {
+    views = await Promise.all(['input', 'output'].map(async (role, index) => {
       const scene = new THREE.Scene();
       scene.environment = environment.texture;
       scene.add(new THREE.HemisphereLight(0xffffff, 0xa7a4a0, 0.8));
@@ -58,8 +63,10 @@ async function mountPreview(link) {
       let horizontalHalf = 0;
       let verticalHalf = 0;
       const vertex = new THREE.Vector3();
+      const meshes = [];
       object.traverse((mesh) => {
         if (!mesh.isMesh) return;
+        meshes.push(mesh);
         const positions = mesh.geometry.getAttribute('position');
         for (let i = 0; i < positions.count; i++) {
           vertex.fromBufferAttribute(positions, i).applyMatrix4(mesh.matrixWorld);
@@ -69,8 +76,13 @@ async function mountPreview(link) {
             Math.abs(vertex.y) * Math.cos(pitch) + radius * Math.sin(pitch));
         }
       });
+      const targets = role === 'input' ? annotations.map((spec) => {
+        const mesh = meshes.find((mesh) => mesh.name === `superquadric_${spec.part}`);
+        if (!mesh) throw new Error(`Missing input part ${spec.part}`);
+        return { ...spec, mesh, center: new THREE.Box3().setFromObject(mesh).getCenter(new THREE.Vector3()) };
+      }) : [];
       return { scene, camera: new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 50),
-        horizontalHalf, verticalHalf };
+        horizontalHalf, verticalHalf, meshes, targets, rect: layout[index] };
     }));
   } catch (error) {
     environment.dispose();
@@ -79,22 +91,48 @@ async function mountPreview(link) {
   }
 
   let width = 160;
-  let height = 120;
+  let height = 112;
   let angle = -0.65;
   let visible = false;
   let frame = 0;
   let previousTime = 0;
+  const raycaster = new THREE.Raycaster();
+  const ndc = new THREE.Vector3();
+
+  function updateLeaders(view) {
+    const [left, top, w, h] = view.rect;
+    for (const target of view.targets) {
+      ndc.copy(target.center).project(view.camera);
+      raycaster.setFromCamera(new THREE.Vector2(ndc.x, ndc.y), view.camera);
+      const hit = raycaster.intersectObjects(view.meshes, false)[0];
+      const shown = hit?.object === target.mesh;
+      target.path.style.visibility = shown ? 'visible' : 'hidden';
+      if (!shown) continue;
+      const ex = left + (ndc.x + 1) * w / 2;
+      const ey = top + (1 - ndc.y) * h / 2;
+      const [sx, sy] = target.start;
+      const dx = ex - sx;
+      const dy = ey - sy;
+      const distance = Math.hypot(dx, dy);
+      const bend = Math.min(13, distance * 0.2);
+      const cx = (sx + ex) / 2 - dy / (distance || 1) * bend;
+      const cy = (sy + ey) / 2 + dx / (distance || 1) * bend;
+      target.path.setAttribute('d', `M ${sx} ${sy} Q ${cx} ${cy} ${ex} ${ey}`);
+    }
+  }
 
   function render() {
     renderer.setScissorTest(false);
     renderer.clear();
     renderer.setScissorTest(true);
-    views.forEach((view, i) => {
-      const x = width * (i === 0 ? 0.02 : 0.55);
-      const w = width * 0.43;
-      const h = height * 0.96;
+    views.forEach((view) => {
+      const [left, top, rw, rh] = view.rect;
+      const x = left / 333 * width;
+      const y = height - (top + rh) / 234 * height;
+      const w = rw / 333 * width;
+      const h = rh / 234 * height;
       const aspect = w / h;
-      const extent = Math.max(view.verticalHalf, view.horizontalHalf / aspect) * 1.06;
+      const extent = Math.max(view.verticalHalf, view.horizontalHalf / aspect) * 1.04;
       const camera = view.camera;
       camera.left = -extent * aspect;
       camera.right = extent * aspect;
@@ -104,9 +142,11 @@ async function mountPreview(link) {
         5 * Math.cos(angle) * Math.cos(pitch));
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
-      renderer.setViewport(x, height * 0.02, w, h);
-      renderer.setScissor(x, height * 0.02, w, h);
+      camera.updateMatrixWorld();
+      renderer.setViewport(x, y, w, h);
+      renderer.setScissor(x, y, w, h);
       renderer.render(view.scene, camera);
+      updateLeaders(view);
     });
     renderer.setScissorTest(false);
   }
@@ -170,7 +210,7 @@ for (const link of previews) {
       observer.disconnect();
       motion.removeEventListener('change', load);
     } catch (error) {
-      // The clean model render remains a clickable preview if WebGL is unavailable.
+      // The complete conditioning example remains clickable if WebGL is unavailable.
       console.warn('SpaceFlow preview could not start:', error);
     }
   }

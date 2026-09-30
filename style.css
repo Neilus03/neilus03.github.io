@@ -663,8 +663,9 @@ p {
 
 .spaceflow-preview {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 333 / 234;
   overflow: hidden;
+  background: #f7f3ff;
   border: 1px solid var(--border);
   border-radius: var(--radius);
 }
@@ -695,6 +696,20 @@ p {
 
 .spaceflow-preview[data-ready="true"] img {
   opacity: 0;
+}
+
+.spaceflow-preview-conditioning {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.spaceflow-preview[data-ready="true"] .spaceflow-preview-conditioning {
+  display: block;
 }
 
 .site-footer {

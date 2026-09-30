@@ -7,8 +7,8 @@
   <title>Neil De La Fuente — ETH Zürich | PRS Lab</title>
   <link rel="icon" type="image/png" sizes="64x64" href="favicon-spaceflow.png?v=20260930">
   <script src="favicon.js?v=20260930" defer></script>
-  <script type="module" src="spaceflow-preview.js?v=20260930-3d"></script>
-  <link rel="stylesheet" href="style.css?v=20260930-3d">
+  <script type="module" src="spaceflow-preview.js?v=20260930-conditioning"></script>
+  <link rel="stylesheet" href="style.css?v=20260930-conditioning">
 </head>
 
 <body>
@@ -164,10 +164,35 @@
         <!-- 2026 -->
         <article class="pub-item">
           <a href="https://neilus03.github.io/spaceflow/" class="pub-visual spaceflow-preview"
-            data-spaceflow-preview aria-label="Explore SpaceFlow: rotating Iron Man 3D example"
+            data-spaceflow-preview aria-label="Explore SpaceFlow: Iron Man and Spider-Man image conditioning in 3D"
             target="_blank" rel="noopener noreferrer">
-            <img src="figs/spaceflow-preview.webp" alt="Input geometry and a generated Iron Man figurine with a Spider-Man head"
-              width="480" height="360" loading="lazy" decoding="async">
+            <img src="figs/spaceflow-preview.webp?v=20260930-conditioning" alt="Iron Man body and Spider-Man head reference images condition a generated 3D figurine"
+              width="480" height="337" loading="lazy" decoding="async">
+            <svg class="spaceflow-preview-conditioning" xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 333 234" aria-hidden="true">
+              <defs>
+                <marker id="spaceflow-conditioning-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="5" markerHeight="5" orient="auto">
+                  <path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="#3f4144" stroke-width="1.6"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                </marker>
+              </defs>
+              <rect x="159" y="8" width="49" height="66" rx="5" fill="#fafafa" stroke="#929292" stroke-width="1.5" />
+              <svg x="161" y="10" width="45" height="62" viewBox="167 76 406 590">
+                <image href="figs/spaceflow/spiderman-conditioning.png" width="740" height="740" />
+              </svg>
+              <rect x="7" y="97" width="42" height="64" rx="5" fill="#fafafa" stroke="#929292" stroke-width="1.5" />
+              <svg x="10" y="100" width="36" height="58" viewBox="37 0 158 310">
+                <image href="figs/spaceflow/ironman-conditioning.png" width="232" height="310" />
+              </svg>
+              <path d="M 169 110 H 220 M 213 106 L 220 110 L 213 114" fill="none"
+                stroke="#34383b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <g fill="none" stroke="#3f4144" stroke-width="1.1" stroke-dasharray="1.6 4"
+                stroke-linecap="round" marker-end="url(#spaceflow-conditioning-arrow)">
+                <path data-spaceflow-leader="head" />
+                <path data-spaceflow-leader="body" />
+              </g>
+            </svg>
           </a>
           <div class="pub-content">
             <h3 class="pub-title">SpaceFlow: Locally Controllable 3D Generation</h3>
