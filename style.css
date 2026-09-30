@@ -656,6 +656,16 @@ p {
   background: #fff;
 }
 
+.pub-visual {
+  display: block;
+  align-self: start;
+}
+
+.pub-visual .pub-img {
+  display: block;
+  height: auto;
+}
+
 .site-footer {
   padding: 4rem 0;
   border-top: 1px solid var(--border);
@@ -2868,7 +2878,8 @@ p {
     gap: 1rem;
   }
 
-  .pub-img {
+  .pub-img,
+  .pub-visual {
     display: none;
   }
 
