@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Neil De La Fuente — ETH Zürich | PRS Lab</title>
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon-spaceflow.png?v=20260930">
+  <script src="favicon.js?v=20260930" defer></script>
   <link rel="stylesheet" href="style.css?v=20260817-paper-thumbnails">
 </head>
 
@@ -109,6 +110,11 @@
         <h3 class="news-title">News</h3>
         <div class="news-container">
           <div class="news-item">
+            <span class="news-date">Sep 2026</span>
+            <span class="news-text">New work: <a href="https://neilus03.github.io/spaceflow/"><strong>SpaceFlow</strong></a>,
+              locally controllable 3D generation. Explore the paper and interactive 3D examples.</span>
+          </div>
+          <div class="news-item">
             <span class="news-date">Aug 2026</span>
             <span class="news-text">Published <a href="https://neilus03.github.io/shape-doppelganger/"><strong>The
                   Shape Doppelganger Problem</strong></a>, an interactive note on editable 3D programs.</span>
@@ -154,6 +160,27 @@
       <h2 class="section-title">Research</h2>
       <p class="focus-description">My work focuses on deep learning, computer vision, and geometric representations.</p>
       <div class="pub-list">
+        <!-- 2026 -->
+        <article class="pub-item">
+          <img src="figs/spaceflow-teaser.webp" alt="SpaceFlow examples of local geometric and appearance control"
+            class="pub-img pub-img-contain" loading="lazy" decoding="async">
+          <div class="pub-content">
+            <h3 class="pub-title">SpaceFlow: Locally Controllable 3D Generation</h3>
+            <p class="pub-authors"><strong>N De La Fuente</strong><sup>*</sup>, J Lafuente Baeza<sup>*</sup>,
+              M Sayfiddinov<sup>*</sup>, F Scharitzer<sup>*</sup>, M Pollefeys, A Çelen,
+              S Deb Sarkar<sup>†</sup>, E Fedele<sup>†</sup></p>
+            <p class="pub-authors"><small>* Equal contribution &nbsp;·&nbsp; † Equal supervision</small></p>
+            <p class="pub-venue">Preprint · 2026</p>
+            <p class="pub-summary">Training-free 3D generation with local geometric control and part-specific
+              text or image appearance conditioning.</p>
+            <div class="pub-links">
+              <a href="papers/spaceflow.pdf" target="_blank" rel="noopener noreferrer" class="btn-minimal">Paper ↗</a>
+              <a href="https://neilus03.github.io/spaceflow/" target="_blank" rel="noopener noreferrer"
+                class="btn-minimal">Project page ↗</a>
+            </div>
+          </div>
+        </article>
+
         <!-- 2025 -->
         <article class="pub-item">
           <img src="figs/4d.gif" alt="4D Scene Generation" class="pub-img">
