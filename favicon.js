@@ -1,20 +1,20 @@
 (() => {
   'use strict';
-
   const script = document.currentScript;
   const icon = document.querySelector('link[rel="icon"]');
   if (!script || !icon) return;
 
-  // Chrome displays only the first frame of animated image favicons. Swap
-  // pre-rendered PNG frames instead; the favicon needs no 3D renderer.
+  // A turntable rendered from the original textured SpaceFlow figurine.
+  // Swapping PNG frames also animates the favicon in Chrome and Safari.
   const size = 64;
-  const columns = 8;
-  const frameCount = 32;
+  const columns = 12;
+  const frameCount = 96;
+  const frameDuration = 1000 / 12;
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const image = new Image();
   const frames = [];
-  let frame = 0;
+  const image = new Image();
   let timer = 0;
+  let startedAt = 0;
 
   function stop() {
     window.clearInterval(timer);
@@ -24,19 +24,18 @@
   function sync() {
     stop();
     if (!frames.length) return;
-    if (motion.matches) {
-      frame = 0;
-      icon.href = frames[0];
-      return;
-    }
-    if (document.hidden) return;
+    icon.href = frames[0];
+    if (motion.matches) return;
+    startedAt = performance.now();
     timer = window.setInterval(() => {
-      frame = (frame + 1) % frames.length;
+      const frame = Math.floor((performance.now() - startedAt) / frameDuration) % frames.length;
       icon.href = frames[frame];
-    }, 125);
+    }, frameDuration);
   }
 
   image.addEventListener('load', () => {
+    if (image.naturalWidth !== columns * size ||
+        image.naturalHeight !== Math.ceil(frameCount / columns) * size) return;
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = size;
     const context = canvas.getContext('2d');
@@ -48,16 +47,14 @@
           Math.floor(i / columns) * size, size, size, 0, 0, size, size);
         frames.push(canvas.toDataURL('image/png'));
       }
-      icon.href = frames[0];
-      document.addEventListener('visibilitychange', sync);
       motion.addEventListener('change', sync);
       window.addEventListener('pagehide', stop);
       window.addEventListener('pageshow', sync);
       sync();
     } catch (_) {
-      // Keep the linked static PNG if frame decoding is unavailable.
+      // The linked frontal PNG remains available if animation is unsupported.
     }
   }, { once: true });
 
-  image.src = new URL('figs/spaceflow-favicon-frames.png?v=20260930', script.src).href;
+  image.src = new URL('figs/spaceflow-figurine-frames.png?v=20261002-figurine', script.src).href;
 })();
